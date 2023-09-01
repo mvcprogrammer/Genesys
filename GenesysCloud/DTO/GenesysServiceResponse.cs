@@ -12,7 +12,5 @@ public record GenesysServiceResponse<T>
     [Description("Http Error Code")]
     public int ErrorCode { get; init; }
     
-    public int TotalHits { get; init; }
-    
     public T? Data { get; init; }
 }

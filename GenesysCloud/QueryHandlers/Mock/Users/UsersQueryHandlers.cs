@@ -1,10 +1,12 @@
+using GenesysCloud.DTO.Response;
+
 namespace GenesysCloud.QueryHandlers.Mock.Users;
 
 public class UsersQueryHandlers : IUsersQueryHandlers
 {
     public GenesysServiceResponse<List<User>> GetAllUsers()
     {
-        throw new NotImplementedException();
+        return GenesysResponse.SuccessResponse(DataGenerator.GenerateUserEntityListing().Entities);
     }
 
     public GenesysServiceResponse<List<AnalyticsUserDetail>> GetUserDetails(UserDetailsQuery userDetailsQuery)
