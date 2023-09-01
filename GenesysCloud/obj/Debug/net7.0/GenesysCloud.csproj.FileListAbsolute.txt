@@ -1,0 +1,12 @@
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/bin/Debug/net7.0/GenesysCloud.deps.json
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/bin/Debug/net7.0/GenesysCloud.dll
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/bin/Debug/net7.0/GenesysCloud.pdb
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/Debug/net7.0/GenesysCloud.csproj.AssemblyReference.cache
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/Debug/net7.0/GenesysCloud.GeneratedMSBuildEditorConfig.editorconfig
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/Debug/net7.0/GenesysCloud.AssemblyInfoInputs.cache
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/Debug/net7.0/GenesysCloud.AssemblyInfo.cs
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/Debug/net7.0/GenesysCloud.csproj.CoreCompileInputs.cache
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/Debug/net7.0/GenesysCloud.dll
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/Debug/net7.0/refint/GenesysCloud.dll
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/Debug/net7.0/GenesysCloud.pdb
+/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/Debug/net7.0/ref/GenesysCloud.dll
