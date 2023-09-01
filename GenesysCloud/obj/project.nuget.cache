@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "dgSpecHash": "WGiXmn5L1r/6K7UNMDoKAw3PWtyy3tfOUny0juMHNuq04YlkP9dQU0G8+8YtfsnIS+szmfhm364zJxz7wmqURA==",
+  "success": true,
+  "projectFilePath": "/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj",
+  "expectedPackageFiles": [
+    "/Users/mvcprogrammer/.nuget/packages/ini-parser/2.5.2/ini-parser.2.5.2.nupkg.sha512",
+    "/Users/mvcprogrammer/.nuget/packages/newtonsoft.json/11.0.2/newtonsoft.json.11.0.2.nupkg.sha512",
+    "/Users/mvcprogrammer/.nuget/packages/purecloudplatform.client.v2/185.0.0/purecloudplatform.client.v2.185.0.0.nupkg.sha512",
+    "/Users/mvcprogrammer/.nuget/packages/restsharp/110.2.0/restsharp.110.2.0.nupkg.sha512",
+    "/Users/mvcprogrammer/.nuget/packages/system.text.encodings.web/7.0.0/system.text.encodings.web.7.0.0.nupkg.sha512",
+    "/Users/mvcprogrammer/.nuget/packages/system.text.json/7.0.2/system.text.json.7.0.2.nupkg.sha512",
+    "/Users/mvcprogrammer/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'ini-parser 2.5.2' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "ini-parser",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
+}

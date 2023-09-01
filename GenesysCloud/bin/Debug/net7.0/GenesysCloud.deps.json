@@ -1,0 +1,131 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "GenesysCloud/1.0.0": {
+        "dependencies": {
+          "PureCloudPlatform.Client.V2": "185.0.0"
+        },
+        "runtime": {
+          "GenesysCloud.dll": {}
+        }
+      },
+      "ini-parser/2.5.2": {
+        "runtime": {
+          "lib/net20/INIFileParser.dll": {
+            "assemblyVersion": "2.5.2.0",
+            "fileVersion": "2.5.2.0"
+          }
+        }
+      },
+      "Newtonsoft.Json/11.0.2": {
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "11.0.0.0",
+            "fileVersion": "11.0.2.21924"
+          }
+        }
+      },
+      "PureCloudPlatform.Client.V2/185.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "11.0.2",
+          "RestSharp": "110.2.0",
+          "System.Text.Encodings.Web": "7.0.0",
+          "System.Text.Json": "7.0.2",
+          "System.Threading.Tasks.Extensions": "4.5.4",
+          "ini-parser": "2.5.2"
+        },
+        "runtime": {
+          "lib/netstandard2.0/PureCloudPlatform.Client.V2.dll": {
+            "assemblyVersion": "185.0.0.0",
+            "fileVersion": "185.0.0.0"
+          }
+        }
+      },
+      "RestSharp/110.2.0": {
+        "dependencies": {
+          "System.Text.Json": "7.0.2"
+        },
+        "runtime": {
+          "lib/net7.0/RestSharp.dll": {
+            "assemblyVersion": "110.2.0.0",
+            "fileVersion": "110.2.0.0"
+          }
+        }
+      },
+      "System.Text.Encodings.Web/7.0.0": {},
+      "System.Text.Json/7.0.2": {
+        "dependencies": {
+          "System.Text.Encodings.Web": "7.0.0"
+        },
+        "runtime": {
+          "lib/net7.0/System.Text.Json.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.323.6910"
+          }
+        }
+      },
+      "System.Threading.Tasks.Extensions/4.5.4": {}
+    }
+  },
+  "libraries": {
+    "GenesysCloud/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ini-parser/2.5.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hp3gKmC/14+6eKLgv7Jd1Z7OV86lO+tNfOXr/stQbwmRhdQuXVSvrRAuAe7G5+lwhkov0XkqZ8/bn1PYWMx6eg==",
+      "path": "ini-parser/2.5.2",
+      "hashPath": "ini-parser.2.5.2.nupkg.sha512"
+    },
+    "Newtonsoft.Json/11.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-IvJe1pj7JHEsP8B8J8DwlMEx8UInrs/x+9oVY+oCD13jpLu4JbJU2WCIsMRn5C4yW9+DgkaO8uiVE5VHKjpmdQ==",
+      "path": "newtonsoft.json/11.0.2",
+      "hashPath": "newtonsoft.json.11.0.2.nupkg.sha512"
+    },
+    "PureCloudPlatform.Client.V2/185.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-MonsyVv392DvEwIpXYkLpXb6XKmVxf7VNcGtj2L++rvB7QfKWv4fv4WuMnFQmyRcvT/xelMuut9KZvsK7XHtSg==",
+      "path": "purecloudplatform.client.v2/185.0.0",
+      "hashPath": "purecloudplatform.client.v2.185.0.0.nupkg.sha512"
+    },
+    "RestSharp/110.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-FXGw0IMcqY7yO/hzS9QrD3iNswNgb9UxJnxWmfOxmGs4kRlZWqdtBoGPLuhlbgsDzX1RFo4WKui8TGGKXWKalw==",
+      "path": "restsharp/110.2.0",
+      "hashPath": "restsharp.110.2.0.nupkg.sha512"
+    },
+    "System.Text.Encodings.Web/7.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-OP6umVGxc0Z0MvZQBVigj4/U31Pw72ITihDWP9WiWDm+q5aoe0GaJivsfYGq53o6dxH7DcXWiCTl7+0o2CGdmg==",
+      "path": "system.text.encodings.web/7.0.0",
+      "hashPath": "system.text.encodings.web.7.0.0.nupkg.sha512"
+    },
+    "System.Text.Json/7.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/LZf/JrGyilojqwpaywb+sSz8Tew7ij4K/Sk+UW8AKfAK7KRhR6mKpKtTm06cYA7bCpGTWfYksIW+mVsdxPegQ==",
+      "path": "system.text.json/7.0.2",
+      "hashPath": "system.text.json.7.0.2.nupkg.sha512"
+    },
+    "System.Threading.Tasks.Extensions/4.5.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg==",
+      "path": "system.threading.tasks.extensions/4.5.4",
+      "hashPath": "system.threading.tasks.extensions.4.5.4.nupkg.sha512"
+    }
+  }
+}
