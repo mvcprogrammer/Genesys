@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="PureCloudPlatform.Client.V2" Version="185.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="DTO\Request\" />
+      <Folder Include="DTO\Response\" />
+      <Folder Include="Helpers\Logger\Serialog\" />
+      <Folder Include="Mappers\" />
+      <Folder Include="Queries\Analytics\Conversations\" />
+      <Folder Include="Queries\Presence\" />
+      <Folder Include="Queries\Quality\" />
+      <Folder Include="Queries\Users\" />
+      <Folder Include="QueryHandlers\Mock\Analytics\Conversations\" />
+      <Folder Include="QueryHandlers\Mock\Presence\" />
+      <Folder Include="QueryHandlers\Mock\Quality\" />
+      <Folder Include="QueryHandlers\Mock\Users\" />
+      <Folder Include="QueryHandlers\PureCloud\Analytics\Conversations\" />
+      <Folder Include="QueryHandlers\PureCloud\Presence\" />
+      <Folder Include="QueryHandlers\PureCloud\Quality\" />
+      <Folder Include="QueryHandlers\PureCloud\Users\" />
+    </ItemGroup>
+
+</Project>
