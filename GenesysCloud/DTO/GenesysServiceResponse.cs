@@ -11,6 +11,9 @@ public record GenesysServiceResponse<T>
     
     [Description("Http Error Code")]
     public int ErrorCode { get; init; }
+
+    public string MethodName { get; init; } = string.Empty;
+    public string Query { get; set; } = string.Empty;
     
     public T? Data { get; init; }
 }

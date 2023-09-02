@@ -83,7 +83,7 @@ public class GenesysConversationAggregateQuery
             GroupBy = groupBy,
             Interval = interval,
             Metrics = metricList,
-            Granularity = "PT24H"
+            Granularity = Constants.TwentyFourHourInterval
         };
     }
 }
