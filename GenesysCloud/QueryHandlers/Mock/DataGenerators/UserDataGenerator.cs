@@ -1,8 +1,8 @@
-namespace GenesysCloud.QueryHandlers.Mock;
+namespace GenesysCloud.QueryHandlers.Mock.DataGenerators;
 
-public static class DataGenerator
+public static class UserDataGenerator
 {
-    public static UserEntityListing GenerateUserEntityListing()
+    public static UserEntityListing GenerateUserData()
     {
         var users = new List<User>();
         var names = UserNames();
@@ -33,7 +33,7 @@ public static class DataGenerator
         };
     }
     
-    private static string[] UserNames()
+    private static IEnumerable<string> UserNames()
     {
         return new[]
         {

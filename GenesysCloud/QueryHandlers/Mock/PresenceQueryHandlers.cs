@@ -1,4 +1,6 @@
-namespace GenesysCloud.QueryHandlers.Mock.Presence;
+using GenesysCloud.QueryHandlers.Contracts;
+
+namespace GenesysCloud.QueryHandlers.Mock;
 
 public class PresenceQueryHandlers : IPresenceQueryHandlers
 {

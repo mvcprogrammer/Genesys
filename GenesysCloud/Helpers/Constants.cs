@@ -8,4 +8,5 @@ public static class Constants
     public const int HtmlServerError = 500;
     public const string ThirtyMinuteInterval = "PT30M";
     public const string TwentyFourHourInterval = "PT24H";
+    public const string NullResponse = " returned a null response.";
 }

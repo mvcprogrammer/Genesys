@@ -1,4 +1,6 @@
-namespace GenesysCloud.QueryHandlers.Mock.Analytics;
+using GenesysCloud.QueryHandlers.Contracts;
+
+namespace GenesysCloud.QueryHandlers.Mock;
 
 public class AnalyticsQueryHandlers : IAnalyticsQueryHandlers
 {

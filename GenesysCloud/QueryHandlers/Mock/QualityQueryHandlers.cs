@@ -1,4 +1,6 @@
-namespace GenesysCloud.QueryHandlers.Mock.Quality;
+using GenesysCloud.QueryHandlers.Contracts;
+
+namespace GenesysCloud.QueryHandlers.Mock;
 
 public class QualityQueryHandlers : IQualityQueryHandlers
 {

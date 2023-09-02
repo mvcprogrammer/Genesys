@@ -13,7 +13,6 @@
     <ItemGroup>
       <Folder Include="DTO\Request\" />
       <Folder Include="DTO\Response\Users\" />
-      <Folder Include="Helpers\Extensions\" />
       <Folder Include="Helpers\Logger\Serialog\" />
       <Folder Include="Mappers\Users\" />
       <Folder Include="Queries\Presence\" />

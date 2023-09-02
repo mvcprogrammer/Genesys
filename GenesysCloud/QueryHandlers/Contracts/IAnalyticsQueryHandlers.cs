@@ -1,4 +1,4 @@
-namespace GenesysCloud.QueryHandlers;
+namespace GenesysCloud.QueryHandlers.Contracts;
 
 public interface IAnalyticsQueryHandlers
 {
