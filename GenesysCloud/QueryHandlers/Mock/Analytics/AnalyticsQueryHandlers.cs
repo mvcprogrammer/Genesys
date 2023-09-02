@@ -1,8 +1,8 @@
-namespace GenesysCloud.QueryHandlers.Mock.Analytics.Conversations;
+namespace GenesysCloud.QueryHandlers.Mock.Analytics;
 
 public class AnalyticsQueryHandlers : IAnalyticsQueryHandlers
 {
-    public GenesysServiceResponse<List<AnalyticsConversationWithoutAttributes>> AnalyticsConversationDetailQuery(ConversationQuery query)
+    public GenesysServiceResponse<List<AnalyticsConversationWithoutAttributes>> ConversationDetailQuery(ConversationQuery query)
     {
         throw new NotImplementedException();
     }
