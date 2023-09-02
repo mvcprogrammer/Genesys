@@ -1,10 +1,13 @@
-namespace GenesysCloud.QueryHandlers.Mock.Users;
+using GenesysCloud.QueryHandlers.Contracts;
+using GenesysCloud.QueryHandlers.Mock.DataGenerators;
+
+namespace GenesysCloud.QueryHandlers.Mock;
 
 public class UsersQueryHandlers : IUsersQueryHandlers
 {
     public GenesysServiceResponse<List<User>> GetAllUsers(int pageSize = 100, string state = "any")
     {
-        return GenesysResponse.SuccessResponse(DataGenerator.GenerateUserEntityListing().Entities);
+        return GenesysResponse.SuccessResponse(UserDataGenerator.GenerateUserData().Entities);
     }
 
     public GenesysServiceResponse<List<AnalyticsUserDetail>> GetUserDetails(UserDetailsQuery query)
