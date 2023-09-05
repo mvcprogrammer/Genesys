@@ -2,22 +2,22 @@ namespace GenesysCloud.Queries.Quality;
 
 public class GenesysEvaluationAggregateQuery
 {
-    private readonly IntervalSpan _interval;
+    private readonly MetricsInterval _interval;
     private readonly IReadOnlyCollection<string> _queueIds;
     private readonly IReadOnlyCollection<string> _divisionIds;
 
-    public GenesysEvaluationAggregateQuery(IntervalSpan interval, IReadOnlyCollection<string> queueIds, IReadOnlyCollection<string> divisions)
+    public GenesysEvaluationAggregateQuery(MetricsInterval interval, IReadOnlyCollection<string> queueIds, IReadOnlyCollection<string> divisions)
     {
-        _interval = interval;
-        _queueIds = queueIds;
-        _divisionIds = divisions;
+        _interval = interval ?? throw new ArgumentNullException(nameof(interval), "Interval cannot be null");
+        _queueIds = queueIds ?? throw new ArgumentNullException(nameof(queueIds), "Queue Id's cannot be null (empty ok)");
+        _divisionIds = divisions ?? throw new ArgumentNullException(nameof(divisions), "Divisions cannot be null (empty ok)");
     }
     
     public EvaluationAggregationQuery Build()
     {
         var interval = _interval.ToGenesysInterval;
         
-        var divisionPredicates = _divisionIds.Select(divisionId => 
+        var userPredicates = _divisionIds.Select(divisionId => 
                 new EvaluationAggregateQueryPredicate
                 {
                     Dimension = EvaluationAggregateQueryPredicate.DimensionEnum.Divisionid,
@@ -37,11 +37,11 @@ public class GenesysEvaluationAggregateQuery
                 })
             .ToList();
 
-        var queryClauses = new List<EvaluationAggregateQueryClause>
+        var clauses = new List<EvaluationAggregateQueryClause>
         {   
             new()
             {
-                Predicates = divisionPredicates,
+                Predicates = userPredicates,
                 Type = EvaluationAggregateQueryClause.TypeEnum.Or
             },
             new()
@@ -53,16 +53,16 @@ public class GenesysEvaluationAggregateQuery
 
         var filter = new EvaluationAggregateQueryFilter
         {
-            Clauses = queryClauses,
+            Clauses = clauses,
             Type = EvaluationAggregateQueryFilter.TypeEnum.And
         };
         
-        var metricList = Enum
+        var metrics = Enum
             .GetValues(typeof(EvaluationAggregationQuery.MetricsEnum))
             .Cast<EvaluationAggregationQuery.MetricsEnum>()
             .ToList();
             
-        metricList.Remove(EvaluationAggregationQuery.MetricsEnum.OutdatedSdkVersion);
+        metrics.Remove(EvaluationAggregationQuery.MetricsEnum.OutdatedSdkVersion);
 
         var groupBy = new List<EvaluationAggregationQuery.GroupByEnum>
         {
@@ -76,7 +76,7 @@ public class GenesysEvaluationAggregateQuery
             Filter = filter,
             GroupBy = groupBy,
             Interval = interval,
-            Metrics = metricList,
+            Metrics = metrics,
             Granularity = Constants.TwentyFourHourInterval,
             FlattenMultivaluedDimensions = true
         };

@@ -2,7 +2,7 @@ namespace GenesysCloud.Helpers.Logger;
 
 public interface ILogger
 {
-    public void LogSuccess(string successMessage);
-    public void LogError(string errorMessage);
-    public void LogDebug(string debugMessage);
+    public void LogSuccess(Guid id, string successMessage);
+    public void LogError(Guid id, string errorMessage);
+    public void LogDebug(Guid id, string debugMessage);
 }

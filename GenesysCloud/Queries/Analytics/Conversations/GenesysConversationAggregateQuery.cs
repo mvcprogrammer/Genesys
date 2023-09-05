@@ -2,13 +2,13 @@ namespace GenesysCloud.Queries.Analytics.Conversations;
 
 public class GenesysConversationAggregateQuery
 {
-    private readonly IntervalSpan _interval;
+    private readonly MetricsInterval _interval;
     private readonly string[] _users;
 
-    public GenesysConversationAggregateQuery(IntervalSpan interval, string[] users)
+    public GenesysConversationAggregateQuery(MetricsInterval interval, string[] users)
     {
-        _interval = interval;
-        _users = users;
+        _interval = interval ?? throw new ArgumentNullException(nameof(interval), "Interval cannot be null");
+        _users = users ?? throw new ArgumentNullException(nameof(users), "Users cannot be null. (empty ok)");
     }
     
     public ConversationAggregationQuery BuildQuery()
@@ -23,7 +23,7 @@ public class GenesysConversationAggregateQuery
                 })
             .ToList();
 
-        var filterClause = new List<ConversationAggregateQueryClause>
+        var clauses = new List<ConversationAggregateQueryClause>
         {
             new()
             {
@@ -32,7 +32,7 @@ public class GenesysConversationAggregateQuery
             }
         };
         
-        var predicateList = new List<ConversationAggregateQueryPredicate>
+        var mediaTypePredicates = new List<ConversationAggregateQueryPredicate>
         {
             new()
             {
@@ -49,11 +49,11 @@ public class GenesysConversationAggregateQuery
         var filter = new ConversationAggregateQueryFilter
         {
             Type = ConversationAggregateQueryFilter.TypeEnum.And,
-            Predicates = predicateList,
-            Clauses = filterClause
+            Predicates = mediaTypePredicates,
+            Clauses = clauses
         };
 
-        var metricList = new List<ConversationAggregationQuery.MetricsEnum>
+        var metrics = new List<ConversationAggregationQuery.MetricsEnum>
         {
             ConversationAggregationQuery.MetricsEnum.Tanswered,
             ConversationAggregationQuery.MetricsEnum.Thandle,
@@ -82,7 +82,7 @@ public class GenesysConversationAggregateQuery
             Filter = filter,
             GroupBy = groupBy,
             Interval = interval,
-            Metrics = metricList,
+            Metrics = metrics,
             Granularity = Constants.TwentyFourHourInterval
         };
     }

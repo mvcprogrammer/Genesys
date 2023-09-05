@@ -2,17 +2,26 @@ namespace GenesysCloud.Queries.Quality;
 
 public class GenesysSurveyAggregateQueryByDivisionByQueue
 {
-    private readonly IntervalSpan _interval;
+    private readonly MetricsInterval _interval;
     private readonly IReadOnlyCollection<string> _queueIds;
     private readonly IReadOnlyCollection<string> _divisionIds;
-
-    public GenesysSurveyAggregateQueryByDivisionByQueue(IntervalSpan interval, IReadOnlyCollection<string> queueIds, IReadOnlyCollection<string> divisions)
+    
+    /// <summary>
+    /// Builds queries for evaluations and surveys.
+    /// For more details, refer to the official documentation: 
+    /// <see href="https://developer.genesys.cloud/useragentman/quality/"/>
+    /// </summary>
+    public GenesysSurveyAggregateQueryByDivisionByQueue(MetricsInterval interval, IReadOnlyCollection<string> queueIds, IReadOnlyCollection<string> divisions)
     {
-        _interval = interval;
-        _queueIds = queueIds;
-        _divisionIds = divisions;
+        _interval = interval ?? throw new ArgumentNullException(nameof(interval), "Interval cannot be null");
+        _queueIds = queueIds ?? throw new ArgumentNullException(nameof(queueIds), "Queue Id's cannot be null (empty ok)");
+        _divisionIds = divisions ?? throw new ArgumentNullException(nameof(divisions), "Divisions cannot be null (empty ok)");
     }
     
+    /// <summary>
+    /// Builds a Survey Aggregate Query.
+    /// This is a starting point to find evaluation and survey ids for agents in a time period
+    /// </summary>
     public SurveyAggregationQuery Build()
     {
         var interval = _interval.ToGenesysInterval;
@@ -37,7 +46,7 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
                 })
             .ToList();
 
-        var queryClause = new List<SurveyAggregateQueryClause>
+        var clauses = new List<SurveyAggregateQueryClause>
         {
             new()
             {
@@ -53,16 +62,16 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
 
         var filter = new SurveyAggregateQueryFilter
         {
-            Clauses = queryClause,
+            Clauses = clauses,
             Type = SurveyAggregateQueryFilter.TypeEnum.And
         };
         
-        var metricList = Enum
+        var metrics = Enum
             .GetValues(typeof(SurveyAggregationQuery.MetricsEnum))
             .Cast<SurveyAggregationQuery.MetricsEnum>()
             .ToList();
             
-        metricList.Remove(SurveyAggregationQuery.MetricsEnum.OutdatedSdkVersion);
+        metrics.Remove(SurveyAggregationQuery.MetricsEnum.OutdatedSdkVersion);
         
         var groupBy = new List<SurveyAggregationQuery.GroupByEnum>
         {
@@ -76,7 +85,7 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
             Filter = filter,
             GroupBy = groupBy,
             Interval = interval,
-            Metrics = metricList,
+            Metrics = metrics,
             Granularity = Constants.TwentyFourHourInterval,
             FlattenMultivaluedDimensions = true
         };

@@ -37,7 +37,7 @@ public class PureCloudUsersQueryHandlers : IUsersQueryHandlers
         }
     }
 
-    public ServiceResponse<List<AnalyticsUserDetail>> GetUserDetails(UserDetailsQuery query)
+    public ServiceResponse<List<AnalyticsUserDetail>> GetUsersStatusDetail(UserDetailsQuery query)
     {
         var pageCount = Constants.Unknown;
         var currentPage = Constants.FirstPage;
@@ -66,7 +66,7 @@ public class PureCloudUsersQueryHandlers : IUsersQueryHandlers
         }
     }
 
-    public ServiceResponse<List<UserAggregateDataContainer>> GetUsersAggregates(UserAggregationQuery query)
+    public ServiceResponse<List<UserAggregateDataContainer>> GetUsersStatusAggregates(UserAggregationQuery query)
     {
         try
         {
