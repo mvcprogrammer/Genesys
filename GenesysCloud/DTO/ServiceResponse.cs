@@ -40,7 +40,7 @@ public static class SystemResponse
     }
     
     [Description("Creates a Success = false ServiceResponse, data is default/null")]
-    private static ServiceResponse<T> FailureResponse<T>(string errorMessage, int errorCode = Constants.Invalid, string query = "")
+    public static ServiceResponse<T> FailureResponse<T>(string errorMessage, int errorCode = Constants.Invalid, string query = "")
     {
         var response = new ServiceResponse<T>
         {
