@@ -18,7 +18,7 @@ public sealed record ServiceResponse<T>
     [Description("Http Error Code. -1 = Not an API exception.")]
     public int ErrorCode { get; init; }
     
-    [Description("Success ? valid data : null")]
+    [Description("Success ? valid data : null/default")]
     public T? Data { get; init; }
 }
 
@@ -35,12 +35,12 @@ public static class SystemResponse
             Data = data
         };
         
-        Logger.LogSuccess($"{response.Id},{ClassHelpers.GetCallingMethodName()}");
+        Logger.LogSuccess(response.Id,$"{ClassHelpers.GetMethodName()}");
         return response;
     }
     
     [Description("Creates a Success = false ServiceResponse, data is default/null")]
-    public static ServiceResponse<T> FailureResponse<T>(string errorMessage, int errorCode = Constants.Invalid, string query = "")
+    public static ServiceResponse<T> FailureResponse<T>(string errorMessage, int errorCode = Constants.Invalid, string query = "", int stackTraceIndex = 2)
     {
         var response = new ServiceResponse<T>
         {
@@ -49,10 +49,9 @@ public static class SystemResponse
             ErrorCode = errorCode,
             Data = default
         };
-
-        var methodName = ClassHelpers.GetCallingMethodName();
-        Logger.LogError($"{response.Id},{methodName},{response.ErrorCode},{response.ErrorMessage}");
-        Logger.LogDebug($"{response.Id},{methodName}\n{query}");
+        
+        Logger.LogError(response.Id,$"{ClassHelpers.GetMethodName(stackTraceIndex)},{response.ErrorCode},{response.ErrorMessage}");
+        Logger.LogDebug(response.Id,$"{ClassHelpers.GetMethodName(stackTraceIndex)}\n{query}");
         
         return response;
     }
@@ -65,10 +64,15 @@ public static class SystemResponse
             return exception switch
             {
                 ApiException apiException => FailureResponse<T>(
-                    apiException.Message, 
-                    apiException.ErrorCode, 
-                    query),
-                _ => FailureResponse<T>(exception.Message)
+                    errorMessage: apiException.Message, 
+                    errorCode: apiException.ErrorCode, 
+                    query: query,
+                    stackTraceIndex: 3),
+                _ => FailureResponse<T>(
+                    errorMessage: exception.Message,
+                    errorCode: Constants.Invalid,
+                    query: string.Empty,
+                    stackTraceIndex: 3)
             };
         }
     }

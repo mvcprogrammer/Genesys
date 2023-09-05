@@ -1,18 +1,17 @@
-using GenesysCloud.Helpers.Logger;
+using GenesysCloud.Queries.Users;
 using GenesysCloud.QueryHandlers.Contracts;
 using UserProfile = GenesysCloud.DTO.Response.Users.UserProfile;
+using UserStatusAggregateQuery = GenesysCloud.Queries.Users.UserStatusAggregateQuery;
 
 namespace GenesysCloud.Services;
 
 public class UsersService
 {
     private readonly IUsersQueryHandlers _usersQueryHandlers;
-    private readonly ILogger _logger;
 
-    public UsersService(IUsersQueryHandlers usersQueryHandlers, ILogger logger)
+    public UsersService(IUsersQueryHandlers usersQueryHandlers)
     {
         _usersQueryHandlers = usersQueryHandlers;
-        _logger = logger;
     }
 
     public ServiceResponse<Dictionary<string, UserProfile>> GetAgentProfileLookup()
@@ -28,5 +27,20 @@ public class UsersService
         
         return SystemResponse.SuccessResponse(agentProfileLookup);
     }
-    
+
+    public ServiceResponse<List<AnalyticsUserDetail>> GetUsersStatusDetail(MetricsInterval interval, string[] userIds)
+    {
+        var queryBuilder = new UserStatusDetailsQuery(interval, userIds);
+        var query = queryBuilder.Build();
+        
+        return _usersQueryHandlers.GetUsersStatusDetail(query);
+    }
+
+    public ServiceResponse<List<UserAggregateDataContainer>> GetUserStatusAggregates(MetricsInterval interval, string[] userIds, string granularity)
+    {
+        var queryBuilder = new UserStatusAggregateQuery(interval, userIds, granularity);
+        var query = queryBuilder.Build();
+        
+        return _usersQueryHandlers.GetUsersStatusAggregates(query);
+    }
 }

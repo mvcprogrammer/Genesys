@@ -5,13 +5,13 @@ public class ConsoleLogger : ILogger
 {
     private readonly List<string> _messageList = new();
 
-    public void LogSuccess(string successMessage)
+    public void LogSuccess(Guid id, string successMessage)
     {
         Console.ForegroundColor = ConsoleColor.Green;
         WriteLine($"** SUCCESS ** {successMessage}");
     }
 
-    public void LogError(string errorMessage)
+    public void LogError(Guid id, string errorMessage)
     {
         Console.ForegroundColor = ConsoleColor.Red;
         WriteLine($"** ERROR **** {errorMessage}");
@@ -20,19 +20,19 @@ public class ConsoleLogger : ILogger
     public void LogInfo(string infoMessage)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        WriteLine($"** INFO ***** {ClassHelpers.GetCallingMethodName()} : {infoMessage}");
+        WriteLine($"** INFO ***** {ClassHelpers.GetMethodName()} : {infoMessage}");
     }
 
     public void LogMethodBegin()
     {
         Console.ForegroundColor = ConsoleColor.White;
-        WriteLine($"** METHOD *** {ClassHelpers.GetCallingMethodName()}");
+        WriteLine($"** METHOD *** {ClassHelpers.GetMethodName()}");
     }
 
-    public void LogDebug(string debugMessage)
+    public void LogDebug(Guid id, string debugMessage)
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
-        WriteLine($"** DEBUG **** {ClassHelpers.GetCallingMethodName()} : {debugMessage}");
+        WriteLine($"** DEBUG **** {ClassHelpers.GetMethodName()} : {debugMessage}");
     }
 
     private void WriteLine(string message)

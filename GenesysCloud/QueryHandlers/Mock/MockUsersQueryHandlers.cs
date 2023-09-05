@@ -11,12 +11,12 @@ public class MockUsersQueryHandlers : IUsersQueryHandlers
         return SystemResponse.SuccessResponse(userEntityListing.Entities);
     }
 
-    public ServiceResponse<List<AnalyticsUserDetail>> GetUserDetails(UserDetailsQuery query)
+    public ServiceResponse<List<AnalyticsUserDetail>> GetUsersStatusDetail(UserDetailsQuery query)
     {
         throw new NotImplementedException();
     }
 
-    public ServiceResponse<List<UserAggregateDataContainer>> GetUsersAggregates(UserAggregationQuery query)
+    public ServiceResponse<List<UserAggregateDataContainer>> GetUsersStatusAggregates(UserAggregationQuery query)
     {
         throw new NotImplementedException();
     }

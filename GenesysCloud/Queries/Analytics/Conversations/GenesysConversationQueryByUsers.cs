@@ -2,13 +2,13 @@ namespace GenesysCloud.Queries.Analytics.Conversations;
 
 public sealed class GenesysConversationQueryByUsers
 {
-    private readonly IntervalSpan _interval;
+    private readonly MetricsInterval _interval;
     private readonly string[] _conversationIds;
     
-    public GenesysConversationQueryByUsers(IntervalSpan interval, string[] conversationIds)
+    public GenesysConversationQueryByUsers(MetricsInterval interval, string[] conversationIds)
     {
-        _interval = interval;
-        _conversationIds = conversationIds;
+        _interval = interval ?? throw new ArgumentNullException(nameof(interval), "Interval cannot be null");
+        _conversationIds = conversationIds ?? throw new ArgumentNullException(nameof(conversationIds), "Conversation Ids cannot be null. (empty ok)");
     }
 
     public ConversationQuery Build()
