@@ -3,20 +3,20 @@ using GenesysCloud.QueryHandlers.Mock.DataGenerators;
 
 namespace GenesysCloud.QueryHandlers.Mock;
 
-public class UsersQueryHandlers : IUsersQueryHandlers
+public class MockUsersQueryHandlers : IUsersQueryHandlers
 {
-    public GenesysServiceResponse<List<User>> GetAllUsers(int pageSize = 100, string state = "any")
+    public ServiceResponse<List<User>> GetAllUsers(int pageSize = 100, string state = "any")
     {
         var userEntityListing = UserDataGenerator.GenerateUserEntityListing();
-        return GenesysResponse.SuccessResponse(userEntityListing.Entities);
+        return SystemResponse.SuccessResponse(userEntityListing.Entities);
     }
 
-    public GenesysServiceResponse<List<AnalyticsUserDetail>> GetUserDetails(UserDetailsQuery query)
+    public ServiceResponse<List<AnalyticsUserDetail>> GetUserDetails(UserDetailsQuery query)
     {
         throw new NotImplementedException();
     }
 
-    public GenesysServiceResponse<List<UserAggregateDataContainer>> GetUsersAggregates(UserAggregationQuery query)
+    public ServiceResponse<List<UserAggregateDataContainer>> GetUsersAggregates(UserAggregationQuery query)
     {
         throw new NotImplementedException();
     }

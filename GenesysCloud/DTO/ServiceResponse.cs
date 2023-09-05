@@ -1,11 +1,13 @@
 using PureCloudPlatform.Client.V2.Client;
 using System.ComponentModel;
+using GenesysCloud.Helpers.Logger;
+using GenesysCloud.Helpers.Logger.Console;
 
 namespace GenesysCloud.DTO;
 
-public record GenesysServiceResponse<T>
+public sealed record ServiceResponse<T>
 {
-    public Guid Id { get; } = new();
+    public Guid Id { get; } = Guid.NewGuid();
     
     [Description("When true, Data<T> CANNOT be null.")]
     public bool Success { get; init; } = true;
@@ -15,48 +17,50 @@ public record GenesysServiceResponse<T>
     
     [Description("Http Error Code. -1 = Not an API exception.")]
     public int ErrorCode { get; init; }
-
-    [Description("Used for logging which method succeeded for failed.")]
-    public string MethodName { get; init; } = string.Empty;
-    
-    [Description("If API exception, the query used when exception was thrown.")]
-    public string Query { get; set; } = string.Empty;
     
     [Description("Success ? valid data : null")]
     public T? Data { get; init; }
 }
 
-public static class GenesysResponse
+public static class SystemResponse
 {
-    [Description("Creates a successful GenesysServiceResponse with valid data")]
-    public static GenesysServiceResponse<T> SuccessResponse<T>(T data)
+    private static readonly ILogger Logger = new ConsoleLogger();
+    
+    [Description("Creates a successful ServiceResponse with valid data")]
+    public static ServiceResponse<T> SuccessResponse<T>(T data)
     {
-        return new GenesysServiceResponse<T>
+        var response = new ServiceResponse<T>
         {
             Success = true,
-            MethodName = ClassHelpers.GetCallingMethodName(),
             Data = data
         };
+        
+        Logger.LogSuccess($"{response.Id},{ClassHelpers.GetCallingMethodName()}");
+        return response;
     }
     
-    [Description("Creates a Success = false GenesysServiceResponse and data is default/null")]
-    public static GenesysServiceResponse<T> FailureResponse<T>(string errorMessage, int errorCode = Constants.Invalid, string query = "")
+    [Description("Creates a Success = false ServiceResponse, data is default/null")]
+    private static ServiceResponse<T> FailureResponse<T>(string errorMessage, int errorCode = Constants.Invalid, string query = "")
     {
-        return new GenesysServiceResponse<T>
+        var response = new ServiceResponse<T>
         {
             Success = false,
-            MethodName = ClassHelpers.GetCallingMethodName(),
-            ErrorMessage = $"{ClassHelpers.GetCallingMethodName()}, {errorMessage}",
+            ErrorMessage = errorMessage,
             ErrorCode = errorCode,
-            Query = query,
             Data = default
         };
+
+        var methodName = ClassHelpers.GetCallingMethodName();
+        Logger.LogError($"{response.Id},{methodName},{response.ErrorCode},{response.ErrorMessage}");
+        Logger.LogDebug($"{response.Id},{methodName}\n{query}");
+        
+        return response;
     }
     
     [Description("DRY exception helper method to handle API exceptions AND general exceptions")]
     public static class ExceptionHandler
     {
-        public static GenesysServiceResponse<T> HandleException<T>(Exception exception, string query = "")
+        public static ServiceResponse<T> HandleException<T>(Exception exception, string query = "")
         {
             return exception switch
             {

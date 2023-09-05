@@ -14,21 +14,15 @@ public static class GenesysSerializer
         return formattedJson ?? string.Empty;
     }
     
-    private static object? JsonDeserializeFromString(this string objectData, Type type)
+    public static T JsonDeserializeFromString<T>(this string objectData)
     {
         try
         {
-            var serializer = new DataContractJsonSerializer(type);
-            using var stream = new MemoryStream();
-            using var writer = new StreamWriter(stream);
-            writer.Write(objectData);
-            writer.Flush();
-            stream.Position = 0;
-            return serializer.ReadObject(stream);
+            return JsonConvert.DeserializeObject<T>(objectData);
         }
         catch (Exception exception)
         {
-            return exception.Message;
+            throw new InvalidOperationException("Failed to deserialize JSON.", exception);
         }
     }
     

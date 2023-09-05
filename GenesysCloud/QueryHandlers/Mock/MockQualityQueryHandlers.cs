@@ -4,7 +4,7 @@ namespace GenesysCloud.QueryHandlers.Mock;
 
 public class MockQualityQueryHandlers : IQualityQueryHandlers
 {
-    public GenesysServiceResponse<EvaluationResponse> GetConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
+    public ServiceResponse<EvaluationResponse> GetConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
     {
         throw new NotImplementedException();
     }

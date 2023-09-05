@@ -13,25 +13,20 @@ public class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
         _analyticsApi = analyticsApi;
     }
     
-    public GenesysServiceResponse<List<ConversationAggregateDataContainer>> GenesysConversationsAggregatesQuery(ConversationAggregationQuery query)
+    public ServiceResponse<List<ConversationAggregateDataContainer>> GenesysConversationsAggregatesQuery(ConversationAggregationQuery query)
     {
         try
         {
             var response = _analyticsApi.PostAnalyticsConversationsAggregatesQuery(query);
-            
-            if (response is null)
-                return GenesysResponse.FailureResponse<List<ConversationAggregateDataContainer>>(
-                    errorMessage: "Constants.NullResponse", query: query.JsonSerializeToString(query.GetType()));
-
-            return GenesysResponse.SuccessResponse(response.Results ?? new List<ConversationAggregateDataContainer>());
+            return SystemResponse.SuccessResponse(response.Results ?? new List<ConversationAggregateDataContainer>());
         }
         catch (Exception exception)
         {
-            return GenesysResponse.ExceptionHandler.HandleException<List<ConversationAggregateDataContainer>>(exception);
+            return SystemResponse.ExceptionHandler.HandleException<List<ConversationAggregateDataContainer>>(exception);
         }
     }
     
-    public GenesysServiceResponse<List<AnalyticsConversationWithoutAttributes>> ConversationDetailQuery(ConversationQuery query)
+    public ServiceResponse<List<AnalyticsConversationWithoutAttributes>> ConversationDetailQuery(ConversationQuery query)
     {
         var pageCount = Constants.Unknown;
         var currentPage = Constants.FirstPage;
@@ -42,17 +37,9 @@ public class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
             while (pageCount >= currentPage || pageCount is Constants.Unknown)
             {
                 var response = _analyticsApi.PostAnalyticsConversationsDetailsQuery(query);
-
-                if (response is null)
-                {
-                    return GenesysResponse.FailureResponse<List<AnalyticsConversationWithoutAttributes>>(
-                        Constants.NullResponse,
-                        Constants.HtmlServerError,
-                        query.JsonSerializeToString(query.GetType()));
-                }
                 
                 if (response.TotalHits is 0)
-                    return GenesysResponse.SuccessResponse(analyticsConversationWithoutAttributesList);
+                    return SystemResponse.SuccessResponse(analyticsConversationWithoutAttributesList);
                 
                 analyticsConversationWithoutAttributesList.AddRange(response.Conversations ?? Enumerable.Empty<AnalyticsConversationWithoutAttributes>());
                 
@@ -62,61 +49,40 @@ public class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
                 query.Paging.PageNumber = ++currentPage;
             }
 
-            return GenesysResponse.SuccessResponse(analyticsConversationWithoutAttributesList);
+            return SystemResponse.SuccessResponse(analyticsConversationWithoutAttributesList);
         }
         catch (Exception exception)
         {
-            return GenesysResponse.ExceptionHandler.HandleException<List<AnalyticsConversationWithoutAttributes>>(exception);
+            return SystemResponse.ExceptionHandler.HandleException<List<AnalyticsConversationWithoutAttributes>>(exception,
+                query.JsonSerializeToString(query.GetType()));
         }
     }
 
-    public GenesysServiceResponse<List<SurveyAggregateDataContainer>> SurveyAggregatesQuery(SurveyAggregationQuery query)
+    public ServiceResponse<List<SurveyAggregateDataContainer>> SurveyAggregatesQuery(SurveyAggregationQuery query)
     {
         try
         {
             var response = _analyticsApi.PostAnalyticsSurveysAggregatesQuery(query);
-
-            if (response is null)
-                return GenesysResponse.FailureResponse<List<SurveyAggregateDataContainer>>(
-                    errorMessage: Constants.NullResponse, query: query.JsonSerializeToString(query.GetType()));
-
-            return GenesysResponse.SuccessResponse(response.Results ?? new List<SurveyAggregateDataContainer>());
-        }
-        catch (ApiException exception)
-        {
-            return GenesysResponse.FailureResponse<List<SurveyAggregateDataContainer>>(
-                exception.Message, 
-                exception.ErrorCode,
-                query.JsonSerializeToString(query.GetType()));
+            return SystemResponse.SuccessResponse(response.Results ?? new List<SurveyAggregateDataContainer>());
         }
         catch (Exception exception)
         {
-            return GenesysResponse.ExceptionHandler.HandleException<List<SurveyAggregateDataContainer>>(exception);
+            return SystemResponse.ExceptionHandler.HandleException<List<SurveyAggregateDataContainer>>(exception,
+                query.JsonSerializeToString(query.GetType()));
         }
     }
 
-    public GenesysServiceResponse<List<EvaluationAggregateDataContainer>> EvaluationAggregationQuery(EvaluationAggregationQuery query)
+    public ServiceResponse<List<EvaluationAggregateDataContainer>> EvaluationAggregationQuery(EvaluationAggregationQuery query)
     {
         try
         {
             var response = _analyticsApi.PostAnalyticsEvaluationsAggregatesQuery(query);
-            
-            if (response is null)
-                return GenesysResponse.FailureResponse<List<EvaluationAggregateDataContainer>>(
-                    errorMessage: Constants.NullResponse, query: query.JsonSerializeToString(query.GetType()));
-
-            return GenesysResponse.SuccessResponse(response.Results ?? new List<EvaluationAggregateDataContainer>());
-        }
-        catch (ApiException exception)
-        {
-            return GenesysResponse.FailureResponse<List<EvaluationAggregateDataContainer>>(
-                exception.Message, 
-                exception.ErrorCode,
-                query.JsonSerializeToString(query.GetType()));
+            return SystemResponse.SuccessResponse(response.Results ?? new List<EvaluationAggregateDataContainer>());
         }
         catch (Exception exception)
         {
-            return GenesysResponse.ExceptionHandler.HandleException<List<EvaluationAggregateDataContainer>>(exception);
+            return SystemResponse.ExceptionHandler.HandleException<List<EvaluationAggregateDataContainer>>(exception,
+                query.JsonSerializeToString(query.GetType()));
         }
     }
 }

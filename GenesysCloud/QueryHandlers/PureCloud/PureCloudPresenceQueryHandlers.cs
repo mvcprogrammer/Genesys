@@ -12,33 +12,28 @@ public class PureCloudPresenceQueryHandlers : IPresenceQueryHandlers
         _presenceApi = presenceApi ?? throw new ArgumentNullException(nameof(presenceApi));
     }
     
-    public GenesysServiceResponse<List<OrganizationPresence>> GetPresenceDefinitions()
+    public ServiceResponse<List<OrganizationPresence>> GetPresenceDefinitions()
     {
         var pageCount = Constants.Unknown;
         var currentPage = Constants.FirstPage;
+        const int pageSize = 100;
         var organizationPresenceList = new List<OrganizationPresence>();
         
         try
         {
             while (pageCount >= currentPage || pageCount is Constants.Unknown)
             {
-                var presenceDefinitions =  _presenceApi.GetPresencedefinitions(pageNumber: currentPage, pageSize: 100);
-                
-                if(presenceDefinitions is null)
-                    return GenesysResponse.FailureResponse<List<OrganizationPresence>>(
-                        Constants.NullResponse, Constants.HtmlServerError);
-                
+                var presenceDefinitions =  _presenceApi.GetPresencedefinitions(pageNumber: currentPage, pageSize: pageSize);
                 organizationPresenceList.AddRange(presenceDefinitions.Entities ?? Enumerable.Empty<OrganizationPresence>());
-                
                 pageCount = presenceDefinitions.PageCount ?? Constants.FirstPage;
                 currentPage++;
             }
 
-            return GenesysResponse.SuccessResponse(organizationPresenceList);
+            return SystemResponse.SuccessResponse(organizationPresenceList);
         }
         catch (Exception exception)
         {
-            return GenesysResponse.ExceptionHandler.HandleException<List<OrganizationPresence>>(exception);
+            return SystemResponse.ExceptionHandler.HandleException<List<OrganizationPresence>>(exception);
         }
     }
 }

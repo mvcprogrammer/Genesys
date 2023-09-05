@@ -12,19 +12,17 @@ public class PureCloudQualityQueryHandlers : IQualityQueryHandlers
         _qualityApi = qualityApi  ?? throw new ArgumentNullException(nameof(qualityApi));
     }
     
-    public GenesysServiceResponse<EvaluationResponse> GetConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
+    public ServiceResponse<EvaluationResponse> GetConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
     {
         try
         {
             var response = _qualityApi.GetQualityConversationEvaluation(conversationId, evaluationId, expand);
-
-            return response is null 
-                ? GenesysResponse.FailureResponse<EvaluationResponse>(Constants.NullResponse) 
-                : GenesysResponse.SuccessResponse(response);
+            return SystemResponse.SuccessResponse(response ?? new EvaluationResponse());
         }
         catch (Exception exception)
         {
-            return GenesysResponse.ExceptionHandler.HandleException<EvaluationResponse>(exception);
+            return SystemResponse.ExceptionHandler.HandleException<EvaluationResponse>(exception, 
+                $"conversationId:{conversationId}, evaluationId:{evaluationId}, expand:{expand}");
         }
     }
 }

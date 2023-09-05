@@ -4,7 +4,7 @@ namespace GenesysCloud.QueryHandlers.Mock;
 
 public class MockPresenceQueryHandlers : IPresenceQueryHandlers
 {
-    public GenesysServiceResponse<List<OrganizationPresence>> GetPresenceDefinitions()
+    public ServiceResponse<List<OrganizationPresence>> GetPresenceDefinitions()
     {
         throw new NotImplementedException();
     }

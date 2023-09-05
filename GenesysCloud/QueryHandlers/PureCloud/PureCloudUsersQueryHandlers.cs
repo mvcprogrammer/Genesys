@@ -12,7 +12,7 @@ public class PureCloudUsersQueryHandlers : IUsersQueryHandlers
         _usersApi = usersApi ?? throw new ArgumentNullException(nameof(usersApi));
     }
 
-    public GenesysServiceResponse<List<User>> GetAllUsers(int pageSize = 100, string state = "any")
+    public ServiceResponse<List<User>> GetAllUsers(int pageSize = 100, string state = "any")
     {
         var pageCount = Constants.Unknown;
         var currentPage = Constants.FirstPage;
@@ -23,26 +23,21 @@ public class PureCloudUsersQueryHandlers : IUsersQueryHandlers
             while (pageCount >= currentPage || pageCount is Constants.Unknown)
             {
                 var response = _usersApi.GetUsers(pageNumber: currentPage, pageSize: pageSize, state: state);
-
-                if (response is null)
-                    return GenesysResponse.FailureResponse<List<User>>(Constants.NullResponse,
-                        Constants.HtmlServerError);
-
                 userList.AddRange(response.Entities ?? Enumerable.Empty<User>());
-
                 pageCount = response.PageCount ?? Constants.FirstPage;
                 currentPage++;
             }
 
-            return GenesysResponse.SuccessResponse(userList);
+            return SystemResponse.SuccessResponse(userList);
         }
         catch (Exception exception)
         {
-            return GenesysResponse.ExceptionHandler.HandleException<List<User>>(exception);
+            return SystemResponse.ExceptionHandler.HandleException<List<User>>(exception,
+                $"pageNumber:{currentPage}, pageSize:{pageSize}, state:{state}");
         }
     }
 
-    public GenesysServiceResponse<List<AnalyticsUserDetail>> GetUserDetails(UserDetailsQuery query)
+    public ServiceResponse<List<AnalyticsUserDetail>> GetUserDetails(UserDetailsQuery query)
     {
         var pageCount = Constants.Unknown;
         var currentPage = Constants.FirstPage;
@@ -53,13 +48,7 @@ public class PureCloudUsersQueryHandlers : IUsersQueryHandlers
             while (pageCount >= currentPage || pageCount is Constants.Unknown)
             {
                 var response = _usersApi.PostAnalyticsUsersDetailsQuery(query);
-
-                if (response is null)
-                    return GenesysResponse.FailureResponse<List<AnalyticsUserDetail>>(
-                        Constants.NullResponse, Constants.HtmlServerError);
-                
-                if(response.UserDetails is not null) 
-                    analyticsUserDetailList.AddRange(response.UserDetails);
+                analyticsUserDetailList.AddRange(response.UserDetails ?? Enumerable.Empty<AnalyticsUserDetail>());
                 
                 if (pageCount is Constants.Unknown)
                     pageCount = (int)Math.Ceiling(response.TotalHits.GetValueOrDefault(0) / 100.0);
@@ -67,31 +56,26 @@ public class PureCloudUsersQueryHandlers : IUsersQueryHandlers
                 query.Paging.PageNumber = ++currentPage;
             }
 
-            return GenesysResponse.SuccessResponse(analyticsUserDetailList);
+            return SystemResponse.SuccessResponse(analyticsUserDetailList);
         }
         catch (Exception exception)
         {
-            return GenesysResponse.ExceptionHandler.HandleException<List<AnalyticsUserDetail>>(
+            return SystemResponse.ExceptionHandler.HandleException<List<AnalyticsUserDetail>>(
                 exception,
                 query.JsonSerializeToString(query.GetType()));
         }
     }
 
-    public GenesysServiceResponse<List<UserAggregateDataContainer>> GetUsersAggregates(UserAggregationQuery query)
+    public ServiceResponse<List<UserAggregateDataContainer>> GetUsersAggregates(UserAggregationQuery query)
     {
         try
         {
             var response = _usersApi.PostAnalyticsUsersAggregatesQuery(query);
-
-            return response is null
-                ? GenesysResponse.FailureResponse<List<UserAggregateDataContainer>>(
-                    errorMessage: Constants.NullResponse,
-                    query: query.JsonSerializeToString(query.GetType()))
-                : GenesysResponse.SuccessResponse(response.Results);
+            return SystemResponse.SuccessResponse(response.Results ?? new List<UserAggregateDataContainer>());
         }
         catch (Exception exception)
         {
-            return GenesysResponse.ExceptionHandler.HandleException<List<UserAggregateDataContainer>>(
+            return SystemResponse.ExceptionHandler.HandleException<List<UserAggregateDataContainer>>(
                 exception,
                 query.JsonSerializeToString(query.GetType()));
         }
