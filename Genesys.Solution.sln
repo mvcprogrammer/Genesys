@@ -2,6 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenesysCloud", "GenesysCloud\GenesysCloud.csproj", "{2E851471-E28F-483D-A3FD-C94D9541F2FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenesysCloud.Tests", "GenesysCloud.Tests\GenesysCloud.Tests.csproj", "{EBA46CC4-5738-49C6-9E24-944D000BE83D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneSphere", "GeneSphere\GeneSphere.csproj", "{4F552C6D-BEA0-4087-9EE7-1A671C6B2357}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Temp", "Temp\Temp.csproj", "{1E0FA8F0-2455-46C8-9B8F-1A1AFDAE1434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +18,17 @@ Global
 		{2E851471-E28F-483D-A3FD-C94D9541F2FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E851471-E28F-483D-A3FD-C94D9541F2FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E851471-E28F-483D-A3FD-C94D9541F2FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBA46CC4-5738-49C6-9E24-944D000BE83D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBA46CC4-5738-49C6-9E24-944D000BE83D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBA46CC4-5738-49C6-9E24-944D000BE83D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBA46CC4-5738-49C6-9E24-944D000BE83D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F552C6D-BEA0-4087-9EE7-1A671C6B2357}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F552C6D-BEA0-4087-9EE7-1A671C6B2357}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F552C6D-BEA0-4087-9EE7-1A671C6B2357}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F552C6D-BEA0-4087-9EE7-1A671C6B2357}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E0FA8F0-2455-46C8-9B8F-1A1AFDAE1434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E0FA8F0-2455-46C8-9B8F-1A1AFDAE1434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E0FA8F0-2455-46C8-9B8F-1A1AFDAE1434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E0FA8F0-2455-46C8-9B8F-1A1AFDAE1434}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
