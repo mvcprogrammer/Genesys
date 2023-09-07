@@ -1,16 +1,10 @@
-using GenesysCloud.QueryHandlers.Contracts;
 using PureCloudPlatform.Client.V2.Api;
 
 namespace GenesysCloud.QueryHandlers.PureCloud;
 
 public class PureCloudUsersQueryHandlers : IUsersQueryHandlers
 {
-    private readonly UsersApi _usersApi;
-
-    public PureCloudUsersQueryHandlers(UsersApi usersApi)
-    {
-        _usersApi = usersApi ?? throw new ArgumentNullException(nameof(usersApi));
-    }
+    private readonly UsersApi _usersApi = new UsersApi();
 
     public ServiceResponse<List<User>> GetAllUsers(int pageSize = 100, string state = "any")
     {
