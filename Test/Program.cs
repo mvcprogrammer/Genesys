@@ -6,26 +6,6 @@ using GenesysCloud.QueryHandlers.Contracts;
 using GenesysCloud.QueryHandlers.Mock;
 using GenesysCloud.QueryHandlers.PureCloud;
 using GenesysCloud.Services;
-using PureCloudPlatform.Client.V2.Api;
-using PureCloudPlatform.Client.V2.Client;
-using static System.AppDomain;
-
-CurrentDomain.UnhandledException += GlobalExceptionHandler;
-
-// this should NEVER happen, but just in case...
-static void GlobalExceptionHandler(object sender, UnhandledExceptionEventArgs args)
-{
-    Exception ex = (Exception)args.ExceptionObject;
-    Console.WriteLine("GlobalExceptionHandler caught : " + ex.Message);
-}
-
-var authResponse = AuthorizeService.Authorize(
-    clientId: "6cad8911-28ca-40ee-97f5-01136dba9087",
-    clientSecret: "44hAG2qlkWCCfUVHU7xnZgL323OyaQ7KKIi297s25eY",
-    cloudRegion: PureCloudRegionHosts.eu_west_2);
-
-if (authResponse.Success is false)
-    return;
 
 var interval = new MetricsInterval
 {
@@ -34,10 +14,7 @@ var interval = new MetricsInterval
 };
 
 #region Users
-
-var usersApi = new UsersApi();
-
-IUsersQueryHandlers usersQueryHandlers = new PureCloudUsersQueryHandlers(usersApi);
+IUsersQueryHandlers usersQueryHandlers = new PureCloudUsersQueryHandlers();
 var usersService = new UsersService(usersQueryHandlers);
 
 var usersProfileResponse = usersService.GetAgentProfileLookup();

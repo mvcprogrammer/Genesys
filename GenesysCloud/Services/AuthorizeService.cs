@@ -15,7 +15,7 @@ public static class AuthorizeService
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<bool>(exception, "");
+            return SystemResponse.ExceptionHandler.HandleException<bool>(exception);
         }
 
         return SystemResponse.SuccessResponse(true);

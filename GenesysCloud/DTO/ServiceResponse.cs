@@ -51,12 +51,14 @@ public static class SystemResponse
         };
         
         Logger.LogError(response.Id,$"{ClassHelpers.GetMethodName(stackTraceIndex)},{response.ErrorCode},{response.ErrorMessage}");
-        Logger.LogDebug(response.Id,$"{ClassHelpers.GetMethodName(stackTraceIndex)}\n{query}");
+        
+        if(query is not "")
+            Logger.LogDebug(response.Id,$"{ClassHelpers.GetMethodName(stackTraceIndex)}\n{query}");
         
         return response;
     }
     
-    [Description("DRY exception helper method to handle API exceptions AND general exceptions")]
+    [Description("DRY exception helper method to handle API exceptions and general exceptions")]
     public static class ExceptionHandler
     {
         public static ServiceResponse<T> HandleException<T>(Exception exception, string query = "")
