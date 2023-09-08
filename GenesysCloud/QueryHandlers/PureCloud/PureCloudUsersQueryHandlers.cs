@@ -1,10 +1,11 @@
+using GenesysCloud.QueryHandlers.Contracts;
 using PureCloudPlatform.Client.V2.Api;
 
 namespace GenesysCloud.QueryHandlers.PureCloud;
 
-public class PureCloudUsersQueryHandlers : IUsersQueryHandlers
+internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
 {
-    private readonly UsersApi _usersApi = new UsersApi();
+    private readonly UsersApi _usersApi = new();
 
     public ServiceResponse<List<User>> GetAllUsers(int pageSize = 100, string state = "any")
     {
@@ -65,7 +66,7 @@ public class PureCloudUsersQueryHandlers : IUsersQueryHandlers
         try
         {
             var response = _usersApi.PostAnalyticsUsersAggregatesQuery(query);
-            return SystemResponse.SuccessResponse(response.Results ?? new List<UserAggregateDataContainer>());
+            return SystemResponse.SuccessResponse<List<UserAggregateDataContainer>>(response.Results ?? new List<UserAggregateDataContainer>());
         }
         catch (Exception exception)
         {

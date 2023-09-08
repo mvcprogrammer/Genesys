@@ -1,11 +1,11 @@
 using System.ComponentModel;
+using GenesysCloud.Services.Contracts.Fundamental;
 
 namespace Genesphere.Controllers;
 
 /// <summary>
-/// Retrieves agent profile lookup.
+/// Information about Genesys agents and other users
 /// </summary>
-/// <returns>A response with agent profile data.</returns>
 [ApiController]
 [Route("[controller]")]
 public class UsersController : ControllerBase
@@ -23,21 +23,21 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Retrieves agent profile lookup.
     /// </summary>
-    /// <returns>A response with agent profile data.</returns>
-    [HttpGet("AgentProfileLookup")]
-    public IActionResult GetAgentProfileLookup()
+    /// <returns>A SystemResponse with List of User data.</returns>
+    [HttpGet("Agents")]
+    public IActionResult GetAgents()
     {
-        var response = _usersService.GetAgentProfileLookup();
+        var response = _usersService.GetUsers();
         return GenerateResponse(response);
     }
 
     /// <summary>
-    /// Retrieves user status details (presence) for the specified interval and user IDs.
+    /// Retrieves user status (presence) details for the specified interval and user IDs.
     /// </summary>
     /// <param name="startTime">Report start date/time in UTC. ex. (2023-09-05T00:00:00Z)</param>
     /// <param name="endTime">Report end date/time in UTC. (ex. 2023-09-06T00:00:00Z)</param>
     /// <param name="userIds">The Genesys user IDs (ex. 6caf7a96-fcf2-498b-bb40-d678fb90f61e)</param>
-    /// <returns>A response with user status details.</returns>
+    /// <returns>A SystemResponse with List of AnalyticsUserData.</returns>
     [HttpPost("UsersStatusDetail")]
     public IActionResult GetUsersStatusDetail([FromQuery] DateTime startTime, [FromQuery] DateTime endTime, [FromQuery] string[] userIds)
     {
@@ -53,8 +53,8 @@ public class UsersController : ControllerBase
     /// <param name="endTime">Report end date/time in UTC. (ex. 2023-09-06T00:00:00Z)</param>
     /// <param name="userIds">The Genesys user IDs (ex. 6caf7a96-fcf2-498b-bb40-d678fb90f61e)</param>
     /// <param name="granularity">The period of time to aggregate by. (ex. PT30M)</param>
-    /// <returns>A response with user status aggregates.</returns>
-    [HttpGet("UserStatusAggregates")]
+    /// <returns>A SystemResponse with a List of Aggregated User Status.</returns>
+    [HttpPost("UserStatusAggregates")]
     public IActionResult GetUserStatusAggregates(
         [FromQuery] DateTime startTime, 
         [FromQuery] DateTime endTime, 
@@ -70,8 +70,8 @@ public class UsersController : ControllerBase
     private IActionResult GenerateResponse<T>(ServiceResponse<T> response)
     {
         if(response.Success)
-            return Ok(response.Data);
+            return Ok(response);
 
-        return BadRequest(new { error = response.ErrorMessage });
+        return BadRequest(new { error = $"Message:{response.ErrorMessage},Link:https://service.arise.com/new/{response.Id}"});
     }
 }

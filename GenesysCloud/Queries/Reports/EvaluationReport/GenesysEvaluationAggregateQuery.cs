@@ -1,4 +1,4 @@
-namespace GenesysCloud.Queries.Quality;
+namespace GenesysCloud.Queries.Reports.EvaluationReport;
 
 public class GenesysEvaluationAggregateQuery
 {
@@ -6,10 +6,10 @@ public class GenesysEvaluationAggregateQuery
     private readonly IReadOnlyCollection<string> _queueIds;
     private readonly IReadOnlyCollection<string> _divisionIds;
 
-    public GenesysEvaluationAggregateQuery(MetricsInterval interval, IReadOnlyCollection<string> queueIds, IReadOnlyCollection<string> divisions)
+    public GenesysEvaluationAggregateQuery(MetricsInterval interval, IReadOnlyCollection<string> queues, IReadOnlyCollection<string> divisions)
     {
         _interval = interval ?? throw new ArgumentNullException(nameof(interval), "Interval cannot be null");
-        _queueIds = queueIds ?? throw new ArgumentNullException(nameof(queueIds), "Queue Id's cannot be null (empty ok)");
+        _queueIds = queues ?? throw new ArgumentNullException(nameof(queues), "Queue Id's cannot be null (empty ok)");
         _divisionIds = divisions ?? throw new ArgumentNullException(nameof(divisions), "Divisions cannot be null (empty ok)");
     }
     
@@ -17,7 +17,7 @@ public class GenesysEvaluationAggregateQuery
     {
         var interval = _interval.ToGenesysInterval;
         
-        var userPredicates = _divisionIds.Select(divisionId => 
+        var divisionPredicates = _divisionIds.Select(divisionId => 
                 new EvaluationAggregateQueryPredicate
                 {
                     Dimension = EvaluationAggregateQueryPredicate.DimensionEnum.Divisionid,
@@ -41,7 +41,7 @@ public class GenesysEvaluationAggregateQuery
         {   
             new()
             {
-                Predicates = userPredicates,
+                Predicates = divisionPredicates,
                 Type = EvaluationAggregateQueryClause.TypeEnum.Or
             },
             new()
@@ -73,7 +73,7 @@ public class GenesysEvaluationAggregateQuery
 
         return new EvaluationAggregationQuery
         {
-            Filter = filter,
+            //Filter = filter,
             GroupBy = groupBy,
             Interval = interval,
             Metrics = metrics,

@@ -1,4 +1,4 @@
-namespace GenesysCloud.Queries.Quality;
+namespace GenesysCloud.Queries.Reports.SurveyReports;
 
 public class GenesysSurveyAggregateQueryByDivisionByQueue
 {
@@ -7,7 +7,7 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
     private readonly IReadOnlyCollection<string> _divisionIds;
     
     /// <summary>
-    /// Builds queries for evaluations and surveys.
+    /// Builds queries for surveys reports.
     /// For more details, refer to the official documentation: 
     /// <see href="https://developer.genesys.cloud/useragentman/quality/"/>
     /// </summary>
@@ -20,7 +20,7 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
     
     /// <summary>
     /// Builds a Survey Aggregate Query.
-    /// This is a starting point to find evaluation and survey ids for agents in a time period
+    /// This is a starting point to find survey ids for agents who had a survey within a time period
     /// </summary>
     public SurveyAggregationQuery Build()
     {

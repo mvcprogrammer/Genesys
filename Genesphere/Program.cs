@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using System.Reflection;
+using GenesysCloud.Services.Contracts.Fundamental;
+using GenesysCloud.Services.PureCloud;
+using GenesysCloud.Services.PureCloud.Fundamental;
 using Microsoft.OpenApi.Models;
 
 
@@ -13,14 +16,14 @@ if (environment.IsDevelopment())
 {
     //builder.Services.AddTransient<IUsersQueryHandlers, MockUsersQueryHandlers>();
     builder.Services.AddTransient<IUsersQueryHandlers, PureCloudUsersQueryHandlers>();
-    builder.Services.AddTransient<IUsersService, UsersService>();
+    builder.Services.AddTransient<IUsersService, PureCloudUsersService>();
 }
 else
 {
     Debug.Assert(false); // shouldn't ever happen, but just in case.
     //builder.Services.AddTransient<IUsersQueryHandlers, PureCloudUsersQueryHandlers>();
     builder.Services.AddTransient<IUsersQueryHandlers, MockUsersQueryHandlers>();
-    builder.Services.AddTransient<IUsersService, UsersService>();
+    builder.Services.AddTransient<IUsersService, PureCloudUsersService>();
 }
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

@@ -3,16 +3,11 @@ using PureCloudPlatform.Client.V2.Api;
 
 namespace GenesysCloud.QueryHandlers.PureCloud;
 
-public class PureCloudQualityQueryHandlers : IQualityQueryHandlers
+internal sealed class PureCloudQualityQueryHandlers : IQualityQueryHandlers
 {
-    private readonly QualityApi _qualityApi;
-
-    public PureCloudQualityQueryHandlers(QualityApi qualityApi)
-    {
-        _qualityApi = qualityApi  ?? throw new ArgumentNullException(nameof(qualityApi));
-    }
+    private readonly QualityApi _qualityApi = new();
     
-    public ServiceResponse<EvaluationResponse> GetConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
+    public ServiceResponse<EvaluationResponse> ConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
     {
         try
         {

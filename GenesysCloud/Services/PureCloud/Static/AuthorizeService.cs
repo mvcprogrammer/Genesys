@@ -1,9 +1,12 @@
 using PureCloudPlatform.Client.V2.Client;
 using PureCloudPlatform.Client.V2.Extensions;
 
-namespace GenesysCloud.Services;
+namespace GenesysCloud.Services.PureCloud.Static;
 
-public static class AuthorizeService
+/// <summary>
+/// Gets Access Token from Genesys *** NEVER ALLOW OTHER ASSEMBLIES ACCESS ***
+/// </summary>
+internal static class AuthorizeService
 {
     public static ServiceResponse<bool> Authorize(string clientId, string clientSecret, PureCloudRegionHosts cloudRegion)
     {
