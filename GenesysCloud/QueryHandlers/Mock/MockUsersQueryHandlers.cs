@@ -1,3 +1,4 @@
+using GenesysCloud.QueryHandlers.Contracts;
 using GenesysCloud.QueryHandlers.Mock.DataGenerators;
 
 namespace GenesysCloud.QueryHandlers.Mock;

@@ -19,6 +19,12 @@ public sealed record MetricsInterval
         EndTimeUtc = DateTime.Parse(interval[25..49]).ToUniversalTime();
     }
 
+    public MetricsInterval(DateTime startTime, DateTime endTime)
+    {
+        StartTimeUtc = startTime.ToUniversalTime();
+        EndTimeUtc = endTime.ToUniversalTime();
+    }
+
     public MetricsInterval()
     {
     }

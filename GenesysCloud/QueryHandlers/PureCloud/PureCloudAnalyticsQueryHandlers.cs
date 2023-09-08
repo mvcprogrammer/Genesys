@@ -1,24 +1,18 @@
 using GenesysCloud.QueryHandlers.Contracts;
 using PureCloudPlatform.Client.V2.Api;
-using PureCloudPlatform.Client.V2.Client;
 
 namespace GenesysCloud.QueryHandlers.PureCloud;
 
-public class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
+internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
 {
-    private readonly AnalyticsApi _analyticsApi;
+    private readonly AnalyticsApi _analyticsApi = new();
 
-    public PureCloudAnalyticsQueryHandlers(AnalyticsApi analyticsApi)
-    {
-        _analyticsApi = analyticsApi;
-    }
-    
     public ServiceResponse<List<ConversationAggregateDataContainer>> GenesysConversationsAggregatesQuery(ConversationAggregationQuery query)
     {
         try
         {
             var response = _analyticsApi.PostAnalyticsConversationsAggregatesQuery(query);
-            return SystemResponse.SuccessResponse(response.Results ?? new List<ConversationAggregateDataContainer>());
+            return SystemResponse.SuccessResponse<List<ConversationAggregateDataContainer>>(response.Results ?? new List<ConversationAggregateDataContainer>());
         }
         catch (Exception exception)
         {
@@ -63,7 +57,7 @@ public class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
         try
         {
             var response = _analyticsApi.PostAnalyticsSurveysAggregatesQuery(query);
-            return SystemResponse.SuccessResponse(response.Results ?? new List<SurveyAggregateDataContainer>());
+            return SystemResponse.SuccessResponse<List<SurveyAggregateDataContainer>>(response.Results ?? new List<SurveyAggregateDataContainer>());
         }
         catch (Exception exception)
         {
@@ -77,7 +71,7 @@ public class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
         try
         {
             var response = _analyticsApi.PostAnalyticsEvaluationsAggregatesQuery(query);
-            return SystemResponse.SuccessResponse(response.Results ?? new List<EvaluationAggregateDataContainer>());
+            return SystemResponse.SuccessResponse<List<EvaluationAggregateDataContainer>>(response.Results ?? new List<EvaluationAggregateDataContainer>());
         }
         catch (Exception exception)
         {

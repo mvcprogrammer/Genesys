@@ -3,14 +3,9 @@ using PureCloudPlatform.Client.V2.Api;
 
 namespace GenesysCloud.QueryHandlers.PureCloud;
 
-public class PureCloudPresenceQueryHandlers : IPresenceQueryHandlers
+internal sealed class PureCloudPresenceQueryHandlers : IPresenceQueryHandlers
 {
-    private readonly PresenceApi _presenceApi;
-    
-    public PureCloudPresenceQueryHandlers(PresenceApi presenceApi)
-    {
-        _presenceApi = presenceApi ?? throw new ArgumentNullException(nameof(presenceApi));
-    }
+    private readonly PresenceApi _presenceApi = new();
     
     public ServiceResponse<List<OrganizationPresence>> GetPresenceDefinitions()
     {
