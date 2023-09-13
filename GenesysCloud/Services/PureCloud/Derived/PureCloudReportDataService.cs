@@ -9,26 +9,21 @@ public sealed class PureCloudReportDataService : IReportDataService
 {
     private readonly IAnalyticsService _analyticsService;
     private readonly IQualityService _qualityService;
-    private readonly IUsersService _usersService;
     
-    public PureCloudReportDataService(IAnalyticsService analyticsService, IQualityService qualityService, IUsersService usersService)
+    public PureCloudReportDataService(IAnalyticsService analyticsService, IQualityService qualityService)
     {
         _analyticsService = analyticsService;
         _qualityService = qualityService;
-        _usersService = usersService;
     }
 
     public ServiceResponse<List<EvaluationRecord>> GetEvaluationRecords(DateTime startTime, DateTime endTime,
         IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queues)
     {
-        var usersProfilesResponse = _usersService.GetAgentProfileLookup();
-        if (usersProfilesResponse.Success is false || usersProfilesResponse.Data is null)
-            return SystemResponse.FailureResponse<List<EvaluationRecord>>("Failure getting user profiles.");
-        var userProfiles = usersProfilesResponse.Data;
-        
         var interval = new MetricsInterval(startTime, endTime);
-        var response = _analyticsService.GetEvaluationAggregateData(interval, divisions, queues);
+        
+        var response = _analyticsService.GetEvaluationAggregateData(interval, queues, divisions);
         var evaluationAggregateDataContainers = response.Data ?? new List<EvaluationAggregateDataContainer>();
+        
         var evaluationRecords = new List<EvaluationRecord>();
 
         foreach (var evaluationAggregateDataContainer in evaluationAggregateDataContainers)
@@ -44,8 +39,7 @@ public sealed class PureCloudReportDataService : IReportDataService
                 if (metricDictionary.TryGetValue("nEvaluations", out var nEvaluations) is false) continue;
                 if (nEvaluations.Count is null or 0) continue;
 
-                if (evaluationAggregateDataGroupDictionary.TryGetValue("conversationId", out var conversationId) is
-                    false)
+                if (evaluationAggregateDataGroupDictionary.TryGetValue("conversationId", out var conversationId) is false)
                     continue;
 
                 if (evaluationAggregateDataGroupDictionary.TryGetValue("evaluationId", out var evaluationId) is false)

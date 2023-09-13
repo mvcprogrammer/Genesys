@@ -28,6 +28,9 @@ internal sealed class PureCloudUsersService : IUsersService
     
     /// <summary>
     /// This method ensures all calls have authorization and handles not authorized responses.
+    /// <param name="action">
+    /// This delegate will invoke its action if authorized=true
+    /// </param>
     /// </summary>
     private ServiceResponse<T> AuthorizedAction<T>(Func<ServiceResponse<T>> action)
     {
@@ -40,6 +43,7 @@ internal sealed class PureCloudUsersService : IUsersService
     /// Use this sparingly, it returns all users and can take awhile.
     /// This might be a good place for breaking the users into a couple of groups and calling with an async span
     /// </summary>
+    [Obsolete("Should use overloaded with userId's")]
     public ServiceResponse<List<User>> GetUsers()
     {
         return AuthorizedAction(() =>
@@ -52,7 +56,8 @@ internal sealed class PureCloudUsersService : IUsersService
     /// <summary>
     /// /// Used to get dictionary for getting profile information by Genesys GUID id.
     /// Use a lot, response data should be cached when practical.
-    /// </summary>
+    /// </summary>.
+    [Obsolete("Should use overloaded with userId's")]
     public ServiceResponse<Dictionary<string, UserProfile>> GetAgentProfileLookup()
     {
         return AuthorizedAction(() =>
@@ -71,8 +76,28 @@ internal sealed class PureCloudUsersService : IUsersService
     }
     
     /// <summary>
+    /// /// Used to get dictionary for getting profile information by Genesys GUID id.
+    /// </summary>
+    public ServiceResponse<Dictionary<string, UserProfile>> GetAgentProfileLookup(IReadOnlyCollection<string> userIds)
+    {
+        return AuthorizedAction(() =>
+        {
+            var userList = _usersQueryHandlers.GetUsers(userIds);
+
+            if (userList.Success is false || userList.Data is null)
+                return SystemResponse.FailureResponse<Dictionary<string, UserProfile>>(userList.ErrorMessage, userList.ErrorCode);
+
+            var agentProfileLookup = userList.Data
+                .Select(x => new { x.Id, x.Name, x.Email, x.Title })
+                .ToDictionary(x => x.Id, x => new UserProfile { Email = x.Email, Name = x.Name, Title = x.Title });
+
+            return SystemResponse.SuccessResponse(agentProfileLookup);
+        });
+    }
+    
+    /// <summary>
     /// Gets Aggregated user presence data.
-    /// This method is useful for getting relevant data before getting detail info. 
+    /// This method is particularly useful for determining which users have presence data before requesting detail info. 
     /// </summary>
     public ServiceResponse<List<UserAggregateDataContainer>> GetUserStatusAggregates(MetricsInterval interval, string[] userIds, string granularity)
     {

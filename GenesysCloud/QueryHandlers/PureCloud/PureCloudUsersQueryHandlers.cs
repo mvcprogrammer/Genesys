@@ -31,6 +31,33 @@ internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
                 $"pageNumber:{currentPage}, pageSize:{pageSize}, state:{state}");
         }
     }
+    
+    public ServiceResponse<List<User>> GetUsers(IReadOnlyCollection<string> userIds)
+    {
+        const int pageSize = 100;
+        const string state = "any";
+        var pageCount = Constants.Unknown;
+        var currentPage = Constants.FirstPage;
+        var userList = new List<User>();
+
+        try
+        {
+            while (pageCount >= currentPage || pageCount is Constants.Unknown)
+            {
+                var response = _usersApi.GetUsers(pageSize,currentPage, userIds.ToList(), state:state);
+                userList.AddRange(response.Entities ?? Enumerable.Empty<User>());
+                pageCount = response.PageCount ?? Constants.FirstPage;
+                currentPage++;
+            }
+
+            return SystemResponse.SuccessResponse(userList);
+        }
+        catch (Exception exception)
+        {
+            return SystemResponse.ExceptionHandler.HandleException<List<User>>(exception,
+                $"pageNumber:{currentPage}, pageSize:{pageSize}, state:{state}");
+        }
+    }
 
     public ServiceResponse<List<AnalyticsUserDetail>> GetUsersStatusDetail(UserDetailsQuery query)
     {
@@ -66,7 +93,7 @@ internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
         try
         {
             var response = _usersApi.PostAnalyticsUsersAggregatesQuery(query);
-            return SystemResponse.SuccessResponse<List<UserAggregateDataContainer>>(response.Results ?? new List<UserAggregateDataContainer>());
+            return SystemResponse.SuccessResponse(response.Results ?? new List<UserAggregateDataContainer>());
         }
         catch (Exception exception)
         {

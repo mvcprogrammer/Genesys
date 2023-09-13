@@ -34,9 +34,9 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Retrieves user status (presence) details for the specified interval and user IDs.
     /// </summary>
-    /// <param name="startTime">Report start date/time in UTC. ex. (2023-09-05T00:00:00Z)</param>
-    /// <param name="endTime">Report end date/time in UTC. (ex. 2023-09-06T00:00:00Z)</param>
-    /// <param name="userIds">The Genesys user IDs (ex. 6caf7a96-fcf2-498b-bb40-d678fb90f61e)</param>
+    /// <param name="startTime">Report start date/time in UTC. ex: 2023-09-05T00:00:00Z</param>
+    /// <param name="endTime">Report end date/time in UTC. ex: 2023-09-06T00:00:00Z</param>
+    /// <param name="userIds">The Genesys user IDs ex: 6caf7a96-fcf2-498b-bb40-d678fb90f61e</param>
     /// <returns>A SystemResponse with List of AnalyticsUserData.</returns>
     [HttpPost("UsersStatusDetail")]
     public IActionResult GetUsersStatusDetail([FromQuery] DateTime startTime, [FromQuery] DateTime endTime, [FromQuery] string[] userIds)
@@ -72,6 +72,6 @@ public class UsersController : ControllerBase
         if(response.Success)
             return Ok(response);
 
-        return BadRequest(new { error = $"Message:{response.ErrorMessage},Link:https://service.arise.com/new/{response.Id}"});
+        return BadRequest(new { error = $"Message:{response.ErrorMessage},Link:https://service.mvcprogrammer.com/new/{response.Id}"});
     }
 }

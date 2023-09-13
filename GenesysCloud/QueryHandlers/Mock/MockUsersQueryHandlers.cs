@@ -11,6 +11,11 @@ public class MockUsersQueryHandlers : IUsersQueryHandlers
         return SystemResponse.SuccessResponse(userEntityListing.Entities);
     }
 
+    public ServiceResponse<List<User>> GetUsers(IReadOnlyCollection<string> userIds)
+    {
+        return GetAllUsers();
+    }
+
     public ServiceResponse<List<AnalyticsUserDetail>> GetUsersStatusDetail(UserDetailsQuery query)
     {
         throw new NotImplementedException();
