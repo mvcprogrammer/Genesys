@@ -1,4 +1,5 @@
 using GenesysCloud.DTO.Response.Reports;
+using UserProfile = GenesysCloud.DTO.Response.Users.UserProfile;
 
 namespace GenesysCloud.Mappers;
 
@@ -79,11 +80,16 @@ public sealed class MapperEvaluationResponseToEvaluationRecords
             IntervalSpan = _interval,
             Status = _evaluationData.Status?.ToString(),
             AgentHasRead = _evaluationData.AgentHasRead ?? false,
-            /*AgentProfile = new GenesysCloud.DTO.Response.Users.UserProfile
+            AgentProfile = new UserProfile
             {
-                Email = evaluationData.Agent.Email,
-                Name = evaluationData.Agent.Name
-            },*/
+                Email = _evaluationData.Agent.Email,
+                Name = _evaluationData.Agent.Name
+            },
+            EvaluatorProfile = new UserProfile
+            {
+                Email = _evaluationData.Evaluator.Email,
+                Name = _evaluationData.Evaluator.Name
+            },
             EvaluationFormName = _evaluationData.EvaluationForm.Name,
             EvaluationFormModifiedDate = _evaluationData.EvaluationForm.ModifiedDate,
             EvaluationFormPublished = _evaluationData.EvaluationForm.Published,

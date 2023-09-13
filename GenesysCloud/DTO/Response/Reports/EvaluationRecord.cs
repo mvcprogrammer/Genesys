@@ -1,9 +1,12 @@
+using UserProfile = GenesysCloud.DTO.Response.Users.UserProfile;
+
 namespace GenesysCloud.DTO.Response.Reports;
 
 public sealed record EvaluationRecord
 {
     public MetricsInterval? IntervalSpan { get; init; }
     public UserProfile? AgentProfile { get; init; }
+    public UserProfile? EvaluatorProfile { get; init; }
     public string? Status { get; init; } = string.Empty;
     public string EvaluationFormName { get; init; } = string.Empty;
     public DateTime? EvaluationFormModifiedDate { get; set; }

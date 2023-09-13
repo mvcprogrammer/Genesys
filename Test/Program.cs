@@ -14,8 +14,8 @@ using PureCloudPlatform.Client.V2.Api;
 
 var interval = new MetricsInterval
 {
-    StartTimeUtc = new DateTime(2023, 09, 7, 0, 0, 0),
-    EndTimeUtc = new DateTime(2023, 09, 8, 0, 0, 0)
+    StartTimeUtc = new DateTime(2023, 09, 8, 0, 0, 0),
+    EndTimeUtc = new DateTime(2023, 09, 9, 0, 0, 0)
 };
 
 var queueProfileLookup = new Dictionary<string, QueueProfile>
@@ -67,9 +67,9 @@ var qualityService = new PureCloudQualityService(qualityQueryHandlers);
 var usersServiceHandlers = new PureCloudUsersQueryHandlers();
 var usersService = new PureCloudUsersService(usersServiceHandlers);
 
-var reportDataService = new PureCloudReportDataService(analyticService, qualityService, usersService);
+var reportDataService = new PureCloudReportDataService(analyticService, qualityService);
 
-var divisions = new string[] { "d176b581-76c3-4d66-9686-7e2233e8eeb5" };
+var divisions = new[] { "d176b581-76c3-4d66-9686-7e2233e8eeb5" };
 var queue = queueProfileLookup.Keys.ToArray();
 var evaluationRecordsResponse = reportDataService.GetEvaluationRecords(interval.StartTimeUtc, interval.EndTimeUtc, divisions, queue);
 

@@ -1,4 +1,4 @@
-namespace GenesysCloud.Queries.Reports.SurveyReports;
+namespace GenesysCloud.Queries.Reports.SurveyReport;
 
 public class GenesysSurveyAggregateQueryByDivisionByQueue
 {
@@ -14,8 +14,8 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
     public GenesysSurveyAggregateQueryByDivisionByQueue(MetricsInterval interval, IReadOnlyCollection<string> queueIds, IReadOnlyCollection<string> divisions)
     {
         _interval = interval ?? throw new ArgumentNullException(nameof(interval), "Interval cannot be null");
-        _queueIds = queueIds ?? throw new ArgumentNullException(nameof(queueIds), "Queue Id's cannot be null (empty ok)");
-        _divisionIds = divisions ?? throw new ArgumentNullException(nameof(divisions), "Divisions cannot be null (empty ok)");
+        _queueIds = queueIds ?? throw new ArgumentNullException(nameof(queueIds), "Queue Id's cannot be null (use Array.Empty<string>())");
+        _divisionIds = divisions ?? throw new ArgumentNullException(nameof(divisions), "Divisions cannot be null (use Array.Empty<string>())");
     }
     
     /// <summary>

@@ -10,8 +10,8 @@ public class GenesysConversationAggregateQueryByQueuesByUsers
     public GenesysConversationAggregateQueryByQueuesByUsers(MetricsInterval interval, string granularity, string[] queueIds, string[] users)
     {
         _interval = interval ?? throw new ArgumentNullException(nameof(interval), "Interval cannot be null");
-        _users = users ?? throw new ArgumentNullException(nameof(users), "Users cannot be null (empty ok)");
-        _queueIds = queueIds ?? throw new ArgumentNullException(nameof(queueIds), "Queue Id's cannot be null (empty ok)");
+        _users = users ?? throw new ArgumentNullException(nameof(users), "Users cannot be null (use Array.Empty<string>())");
+        _queueIds = queueIds ?? throw new ArgumentNullException(nameof(queueIds), "Queue Id's cannot be null (use Array.Empty<string>())");
         _granularity = granularity ?? throw new ArgumentNullException(nameof(granularity), "Granularity must be specified. (See GenesysCloud.Helpers.Constants");
     }
     

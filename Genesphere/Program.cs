@@ -1,29 +1,33 @@
-using System.Diagnostics;
 using System.Reflection;
+using GenesysCloud.Services.Contracts.Derived;
 using GenesysCloud.Services.Contracts.Fundamental;
-using GenesysCloud.Services.PureCloud;
+using GenesysCloud.Services.PureCloud.Derived;
 using GenesysCloud.Services.PureCloud.Fundamental;
 using Microsoft.OpenApi.Models;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 var environment = builder.Environment;
 if (environment.IsDevelopment())
 {
-    //builder.Services.AddTransient<IUsersQueryHandlers, MockUsersQueryHandlers>();
+    builder.Services.AddTransient<IQualityQueryHandlers, PureCloudQualityQueryHandlers>();
+    builder.Services.AddTransient<IQualityService, PureCloudQualityService>();
+    builder.Services.AddTransient<IAnalyticsQueryHandlers, PureCloudAnalyticsQueryHandlers>();
+    builder.Services.AddTransient<IAnalyticsService, PureCloudAnalyticsService>();
     builder.Services.AddTransient<IUsersQueryHandlers, PureCloudUsersQueryHandlers>();
     builder.Services.AddTransient<IUsersService, PureCloudUsersService>();
+    builder.Services.AddTransient<IReportDataService, PureCloudReportDataService>();
 }
 else
 {
-    Debug.Assert(false); // shouldn't ever happen, but just in case.
-    //builder.Services.AddTransient<IUsersQueryHandlers, PureCloudUsersQueryHandlers>();
-    builder.Services.AddTransient<IUsersQueryHandlers, MockUsersQueryHandlers>();
+    builder.Services.AddTransient<IQualityQueryHandlers, PureCloudQualityQueryHandlers>();
+    builder.Services.AddTransient<IQualityService, PureCloudQualityService>();
+    builder.Services.AddTransient<IAnalyticsQueryHandlers, PureCloudAnalyticsQueryHandlers>();
+    builder.Services.AddTransient<IAnalyticsService, PureCloudAnalyticsService>();
+    builder.Services.AddTransient<IUsersQueryHandlers, PureCloudUsersQueryHandlers>();
     builder.Services.AddTransient<IUsersService, PureCloudUsersService>();
+    builder.Services.AddTransient<IReportDataService, PureCloudReportDataService>();
 }
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -39,13 +43,13 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
