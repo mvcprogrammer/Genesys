@@ -17,6 +17,8 @@ if (environment.IsDevelopment())
     builder.Services.AddTransient<IAnalyticsService, PureCloudAnalyticsService>();
     builder.Services.AddTransient<IUsersQueryHandlers, PureCloudUsersQueryHandlers>();
     builder.Services.AddTransient<IUsersService, PureCloudUsersService>();
+    builder.Services.AddTransient<ISpeechTextQueryHandlers, PureCloudSpeechTextQueryHandlers>();
+    builder.Services.AddTransient<ISpeechTextAnalyticsService, PureCloudSpeechTextAnalyticsService>();
     builder.Services.AddTransient<IReportDataService, PureCloudReportDataService>();
 }
 else

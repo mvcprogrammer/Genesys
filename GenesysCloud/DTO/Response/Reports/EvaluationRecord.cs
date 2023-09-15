@@ -20,6 +20,8 @@ public sealed record EvaluationRecord
     public float TotalCriticalScore { get; set; }
     public float TotalNonCriticalScore { get; set; }
     public bool AgentHasRead { get; set; } = false;
+    public string SilenceDurationPercentage { get; set; } = string.Empty;
+    
     public List<EvaluationGroup> EvaluationGroups = new();
 }
 

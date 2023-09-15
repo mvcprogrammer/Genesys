@@ -58,7 +58,7 @@ public static class SystemResponse
         return response;
     }
     
-    [Description("DRY exception helper method to handle API exceptions and general exceptions")]
+    [Description("Exception helper method to handle API exceptions and general exceptions")]
     public static class ExceptionHandler
     {
         public static ServiceResponse<T> HandleException<T>(Exception exception, string query = "")

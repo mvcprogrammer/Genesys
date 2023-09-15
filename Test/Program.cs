@@ -7,6 +7,7 @@ using GenesysCloud.QueryHandlers.Contracts;
 using GenesysCloud.QueryHandlers.Mock;
 using GenesysCloud.QueryHandlers.PureCloud;
 using GenesysCloud.Services;
+using GenesysCloud.Services.Contracts.Fundamental;
 using GenesysCloud.Services.PureCloud;
 using GenesysCloud.Services.PureCloud.Derived;
 using GenesysCloud.Services.PureCloud.Fundamental;
@@ -67,7 +68,10 @@ var qualityService = new PureCloudQualityService(qualityQueryHandlers);
 var usersServiceHandlers = new PureCloudUsersQueryHandlers();
 var usersService = new PureCloudUsersService(usersServiceHandlers);
 
-var reportDataService = new PureCloudReportDataService(analyticService, qualityService);
+var speechTextAnalyticsHandler = new PureCloudSpeechTextQueryHandlers();
+var speechTextAnalyticsService = new PureCloudSpeechTextAnalyticsService(speechTextAnalyticsHandler);
+
+var reportDataService = new PureCloudReportDataService(analyticService, qualityService, speechTextAnalyticsService);
 
 var divisions = new[] { "d176b581-76c3-4d66-9686-7e2233e8eeb5" };
 var queue = queueProfileLookup.Keys.ToArray();

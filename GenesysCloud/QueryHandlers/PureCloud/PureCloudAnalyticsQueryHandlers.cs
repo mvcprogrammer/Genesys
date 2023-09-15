@@ -12,7 +12,7 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
         try
         {
             var response = _analyticsApi.PostAnalyticsConversationsAggregatesQuery(query);
-            return SystemResponse.SuccessResponse<List<ConversationAggregateDataContainer>>(response.Results ?? new List<ConversationAggregateDataContainer>());
+            return SystemResponse.SuccessResponse(response.Results ?? new List<ConversationAggregateDataContainer>());
         }
         catch (Exception exception)
         {
@@ -57,7 +57,7 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
         try
         {
             var response = _analyticsApi.PostAnalyticsSurveysAggregatesQuery(query);
-            return SystemResponse.SuccessResponse<List<SurveyAggregateDataContainer>>(response.Results ?? new List<SurveyAggregateDataContainer>());
+            return SystemResponse.SuccessResponse(response.Results ?? new List<SurveyAggregateDataContainer>());
         }
         catch (Exception exception)
         {
@@ -71,7 +71,7 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
         try
         {
             var response = _analyticsApi.PostAnalyticsEvaluationsAggregatesQuery(query);
-            return SystemResponse.SuccessResponse<List<EvaluationAggregateDataContainer>>(response.Results ?? new List<EvaluationAggregateDataContainer>());
+            return SystemResponse.SuccessResponse(response.Results ?? new List<EvaluationAggregateDataContainer>());
         }
         catch (Exception exception)
         {

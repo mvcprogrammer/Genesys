@@ -39,6 +39,16 @@ public class PureCloudAnalyticsService : IAnalyticsService
             return response;
         });
     }
+
+    public ServiceResponse<List<AnalyticsConversationWithoutAttributes>> GetConversationDetails(ConversationQuery query)
+    {
+        return AuthorizedAction(() =>
+        {
+            var q = new ConversationQuery();
+            var response = _analyticsQueryHandlers.ConversationDetailQuery(q);
+            return response;
+        });
+    }
     
     /// <summary>
     /// /// Gets an authorization token before making calls.
