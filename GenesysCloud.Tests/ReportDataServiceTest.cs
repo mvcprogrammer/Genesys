@@ -7,14 +7,16 @@ namespace GenesysCloud.Tests
     {
         private readonly Mock<IAnalyticsService> _mockAnalyticsService;
         private readonly Mock<IQualityService> _mockQualityService;
+        private readonly Mock<ISpeechTextAnalyticsService> _mockSpeechTextAnalyticsService;
         private readonly PureCloudReportDataService _service;
 
         public PureCloudReportDataServiceTests()
         {
             _mockAnalyticsService = new Mock<IAnalyticsService>();
             _mockQualityService = new Mock<IQualityService>();
+            _mockSpeechTextAnalyticsService = new Mock<ISpeechTextAnalyticsService>();
             
-            _service = new PureCloudReportDataService(_mockAnalyticsService.Object, _mockQualityService.Object);
+            _service = new PureCloudReportDataService(_mockAnalyticsService.Object, _mockQualityService.Object, _mockSpeechTextAnalyticsService.Object);
         }
 
         [Fact]

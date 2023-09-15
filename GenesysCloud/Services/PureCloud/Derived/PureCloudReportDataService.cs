@@ -9,11 +9,16 @@ public sealed class PureCloudReportDataService : IReportDataService
 {
     private readonly IAnalyticsService _analyticsService;
     private readonly IQualityService _qualityService;
+    private readonly ISpeechTextAnalyticsService _speechTextAnalyticsService;
     
-    public PureCloudReportDataService(IAnalyticsService analyticsService, IQualityService qualityService)
+    public PureCloudReportDataService(
+        IAnalyticsService analyticsService, 
+        IQualityService qualityService,
+        ISpeechTextAnalyticsService speechTextAnalyticsService)
     {
         _analyticsService = analyticsService;
         _qualityService = qualityService;
+        _speechTextAnalyticsService = speechTextAnalyticsService;
     }
 
     public ServiceResponse<List<EvaluationRecord>> GetEvaluationRecords(DateTime startTime, DateTime endTime,
@@ -46,11 +51,14 @@ public sealed class PureCloudReportDataService : IReportDataService
                     continue;
 
                 var evaluationResponse = _qualityService.GetConversationEvaluationDetail(conversationId, evaluationId, expand: "agent,evaluator,evaluationForm");
-
                 if (evaluationResponse.Success is false || evaluationResponse.Data is null)
                     return SystemResponse.FailureResponse<List<EvaluationRecord>>(response.ErrorMessage, response.ErrorCode);
-
-                var mapper = new MapperEvaluationResponseToEvaluationRecords(interval, conversationId, evaluationId, evaluationResponse.Data);
+                
+                var speechTextAnalyticsResponse = _speechTextAnalyticsService.GetConversationAnalytics(conversationId);
+                if(speechTextAnalyticsResponse.Success is false)
+                    return SystemResponse.FailureResponse<List<EvaluationRecord>>(response.ErrorMessage, response.ErrorCode);
+                
+                var mapper = new MapperEvaluationResponseToEvaluationRecords(interval, evaluationResponse.Data, speechTextAnalyticsResponse.Data ?? new ConversationMetrics());
                 var evaluationRecordResponse = mapper.Map();
                 
                 if (evaluationRecordResponse.Success is false || evaluationRecordResponse.Data is null)

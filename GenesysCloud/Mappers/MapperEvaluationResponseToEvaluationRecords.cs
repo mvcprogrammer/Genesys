@@ -6,35 +6,33 @@ namespace GenesysCloud.Mappers;
 public sealed class MapperEvaluationResponseToEvaluationRecords
 {
     private readonly MetricsInterval _interval;
-    private readonly string _conversationId;
-    private readonly string _evaluationId;
     private readonly EvaluationResponse _evaluationData;
-    public MapperEvaluationResponseToEvaluationRecords(MetricsInterval interval, string conversationId, string evaluationId, EvaluationResponse evaluationData)
+    private readonly ConversationMetrics _conversationMetrics;
+
+    public MapperEvaluationResponseToEvaluationRecords(MetricsInterval interval, EvaluationResponse evaluationData, ConversationMetrics conversationMetrics)
     {
         _interval = interval;
-        _conversationId = conversationId;
-        _evaluationId = evaluationId;
         _evaluationData = evaluationData;
+        _conversationMetrics = conversationMetrics;
     }
+
     public ServiceResponse<EvaluationRecord> Map()
     {
-        TimeSpan? conversationTimeSpan;
+        TimeSpan? conversationTimeSpan =
+            _evaluationData.ConversationEndDate - _evaluationData.ConversationDate ?? new TimeSpan(0);
 
-        if (_evaluationData.ConversationDate is null || _evaluationData.ConversationEndDate is null)
-            conversationTimeSpan = new TimeSpan(0);
-        else
-            conversationTimeSpan = _evaluationData.ConversationEndDate - _evaluationData.ConversationDate;
+        var questionGroups = _evaluationData.EvaluationForm.QuestionGroups;
 
-        var dictionaryQuestionIdToQuestion = _evaluationData.EvaluationForm.QuestionGroups
-            .SelectMany(questionGroup => questionGroup.Questions.ToDictionary(x => x.Id, x => x))
-            .ToDictionary(x => x.Key, x => x.Value.Text);
+        var dictionaryQuestionIdToQuestion = questionGroups
+            .SelectMany(questionGroup => questionGroup.Questions)
+            .ToDictionary(x => x.Id, x => x.Text);
 
-        var dictionaryAnswerOptionIdToText = _evaluationData.EvaluationForm.QuestionGroups
-            .SelectMany(x => x.Questions
-                .SelectMany(y => y.AnswerOptions))
+        var dictionaryAnswerOptionIdToText = questionGroups
+            .SelectMany(x => x.Questions)
+            .SelectMany(y => y.AnswerOptions)
             .ToDictionary(y => y.Id, y => y.Text);
 
-        var dictionaryQuestionGroups = _evaluationData.EvaluationForm.QuestionGroups
+        var dictionaryQuestionGroups = questionGroups
             .ToDictionary(x => x.Id, x => x.Name);
 
         var answerGroups = _evaluationData.Answers.QuestionGroupScores
@@ -46,34 +44,36 @@ public sealed class MapperEvaluationResponseToEvaluationRecords
 
         foreach (var questionGroup in dictionaryQuestionGroups)
         {
-            var evaluationGroup = new EvaluationGroup
-            {
-                Title = questionGroup.Value
-            };
+            var evaluationGroup = new EvaluationGroup { Title = questionGroup.Value };
 
             var answerGroup = answerGroups[curGroup++];
 
-            foreach (var answer in answerGroup.Where(answer => answer.Value.MarkedNA is not true))
+            foreach (var answer in answerGroup.Values.Where(answer => answer.MarkedNA is not true))
             {
-                if (dictionaryQuestionIdToQuestion.TryGetValue(answer.Value.QuestionId, out var evaluationQuestion) is false)
-                    return SystemResponse.FailureResponse<EvaluationRecord>($"Failed to find evaluation question");
+                if (!dictionaryQuestionIdToQuestion.TryGetValue(answer.QuestionId, out var evaluationQuestion) ||
+                    !dictionaryAnswerOptionIdToText.TryGetValue(answer.AnswerId, out var evaluationAnswer))
+                {
+                    return SystemResponse.FailureResponse<EvaluationRecord>(
+                        $"Failed to find evaluation question or answer");
+                }
 
-                if (dictionaryAnswerOptionIdToText.TryGetValue(answer.Value.AnswerId, out var evaluationAnswer) is false)
-                    return SystemResponse.FailureResponse<EvaluationRecord>($"Failed to find evaluation answer");
-                
                 var scoringSet = new GenesysCloud.DTO.Response.Reports.EvaluationScoringSet
                 {
-                    Question = evaluationQuestion ?? string.Empty,
-                    Answer = evaluationAnswer ?? string.Empty ,
-                    Comment = answer.Value.Comments ?? string.Empty,
-                    Score = answer.Value.Score
+                    Question = evaluationQuestion,
+                    Answer = evaluationAnswer,
+                    Comment = answer.Comments ?? string.Empty,
+                    Score = answer.Score
                 };
-                
+
                 evaluationGroup.ScoringSets?.Add(scoringSet);
             }
-            
+
             evaluationGroups.Add(evaluationGroup);
         }
+
+        var silenceDurationPercentage = _conversationMetrics.ParticipantMetrics?.SilenceDurationPercentage is null 
+            ? "N/A" 
+            : $"{_conversationMetrics.ParticipantMetrics.SilenceDurationPercentage.ToString()}%";
         
         var evaluationRecord = new EvaluationRecord
         {
@@ -94,13 +94,14 @@ public sealed class MapperEvaluationResponseToEvaluationRecords
             EvaluationFormModifiedDate = _evaluationData.EvaluationForm.ModifiedDate,
             EvaluationFormPublished = _evaluationData.EvaluationForm.Published,
             ConversationTimeSpan = conversationTimeSpan,
-            MediaType =  string.Join(',', _evaluationData.MediaType?.ToArray() ?? Array.Empty<EvaluationResponse.MediaTypeEnum>()),
+            MediaType = string.Join(',', _evaluationData.MediaType?.ToArray() ?? Array.Empty<EvaluationResponse.MediaTypeEnum>()),
             AgentComments = _evaluationData.Answers?.AgentComments ?? string.Empty,
             EvaluatorComments = _evaluationData.Answers?.Comments ?? string.Empty,
             EvaluatorPrivateComments = _evaluationData.Answers?.PrivateComments ?? string.Empty,
             TotalScore = _evaluationData.Answers?.TotalScore ?? 0,
             TotalNonCriticalScore = _evaluationData.Answers?.TotalNonCriticalScore ?? 0,
             TotalCriticalScore = _evaluationData.Answers?.TotalCriticalScore ?? 0,
+            SilenceDurationPercentage = silenceDurationPercentage,
             EvaluationGroups = evaluationGroups
         };
 
