@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="PureCloudPlatform.Client.V2" Version="185.0.0" />
+      <PackageReference Include="PureCloudPlatform.Client.V2" Version="188.0.0" />
     </ItemGroup>
 
     <ItemGroup>

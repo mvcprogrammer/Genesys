@@ -19,7 +19,7 @@ public class PureCloudSpeechTextQueryHandlers : ISpeechTextQueryHandlers
     {
         try
         {
-            var response = _speechTextAnalyticsApi.GetSpeechandtextanalyticsConversation(conversationId);
+            var response = _speechTextAnalyticsApi.GetSpeechandtextanalyticsConversation(conversationId: conversationId);
             return SystemResponse.SuccessResponse(response);
         }
         catch (Exception exception)

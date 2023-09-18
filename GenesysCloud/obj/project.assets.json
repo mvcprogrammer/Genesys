@@ -28,7 +28,7 @@
           }
         }
       },
-      "PureCloudPlatform.Client.V2/185.0.0": {
+      "PureCloudPlatform.Client.V2/188.0.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "11.0.2",
@@ -182,10 +182,10 @@
         "newtonsoft.json.nuspec"
       ]
     },
-    "PureCloudPlatform.Client.V2/185.0.0": {
-      "sha512": "MonsyVv392DvEwIpXYkLpXb6XKmVxf7VNcGtj2L++rvB7QfKWv4fv4WuMnFQmyRcvT/xelMuut9KZvsK7XHtSg==",
+    "PureCloudPlatform.Client.V2/188.0.0": {
+      "sha512": "VoWVOpsccd44NePHqz8ezcTXLSu/klX6WLbBc3u0EW0z3PCX630gg/iiO3olqWMymbIP0Zg+xqgTY+tq9AjqYw==",
       "type": "package",
-      "path": "purecloudplatform.client.v2/185.0.0",
+      "path": "purecloudplatform.client.v2/188.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -193,7 +193,7 @@
         "lib/net471/PureCloudPlatform.Client.V2.xml",
         "lib/netstandard2.0/PureCloudPlatform.Client.V2.dll",
         "lib/netstandard2.0/PureCloudPlatform.Client.V2.xml",
-        "purecloudplatform.client.v2.185.0.0.nupkg.sha512",
+        "purecloudplatform.client.v2.188.0.0.nupkg.sha512",
         "purecloudplatform.client.v2.nuspec"
       ]
     },
@@ -384,7 +384,7 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "PureCloudPlatform.Client.V2 >= 185.0.0"
+      "PureCloudPlatform.Client.V2 >= 188.0.0"
     ]
   },
   "packageFolders": {
@@ -429,7 +429,7 @@
         "dependencies": {
           "PureCloudPlatform.Client.V2": {
             "target": "Package",
-            "version": "[185.0.0, )"
+            "version": "[188.0.0, )"
           }
         },
         "imports": [

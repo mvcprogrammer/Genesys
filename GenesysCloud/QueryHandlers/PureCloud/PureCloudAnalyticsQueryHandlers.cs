@@ -19,7 +19,7 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
     {
         try
         {
-            var response = _analyticsApi.PostAnalyticsConversationsAggregatesQuery(query);
+            var response = _analyticsApi.PostAnalyticsConversationsAggregatesQuery(body: query);
             return SystemResponse.SuccessResponse(response.Results ?? new List<ConversationAggregateDataContainer>());
         }
         catch (Exception exception)
@@ -38,7 +38,7 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
         {
             while (pageCount >= currentPage || pageCount is Constants.Unknown)
             {
-                var response = _analyticsApi.PostAnalyticsConversationsDetailsQuery(query);
+                var response = _analyticsApi.PostAnalyticsConversationsDetailsQuery(body: query);
                 
                 if (response.TotalHits is 0)
                     return SystemResponse.SuccessResponse(analyticsConversationWithoutAttributesList);
@@ -64,7 +64,7 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
     {
         try
         {
-            var response = _analyticsApi.PostAnalyticsSurveysAggregatesQuery(query);
+            var response = _analyticsApi.PostAnalyticsSurveysAggregatesQuery(body: query);
             return SystemResponse.SuccessResponse(response.Results ?? new List<SurveyAggregateDataContainer>());
         }
         catch (Exception exception)
@@ -78,7 +78,7 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
     {
         try
         {
-            var response = _analyticsApi.PostAnalyticsEvaluationsAggregatesQuery(query);
+            var response = _analyticsApi.PostAnalyticsEvaluationsAggregatesQuery(body: query);
             return SystemResponse.SuccessResponse(response.Results ?? new List<EvaluationAggregateDataContainer>());
         }
         catch (Exception exception)
