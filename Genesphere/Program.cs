@@ -11,6 +11,7 @@ builder.Services.AddControllers();
 var environment = builder.Environment;
 if (environment.IsDevelopment())
 {
+    // fundamentals
     builder.Services.AddTransient<IQualityQueryHandlers, PureCloudQualityQueryHandlers>();
     builder.Services.AddTransient<IQualityService, PureCloudQualityService>();
     builder.Services.AddTransient<IAnalyticsQueryHandlers, PureCloudAnalyticsQueryHandlers>();
@@ -19,17 +20,28 @@ if (environment.IsDevelopment())
     builder.Services.AddTransient<IUsersService, PureCloudUsersService>();
     builder.Services.AddTransient<ISpeechTextQueryHandlers, PureCloudSpeechTextQueryHandlers>();
     builder.Services.AddTransient<ISpeechTextAnalyticsService, PureCloudSpeechTextAnalyticsService>();
-    builder.Services.AddTransient<IReportDataService, PureCloudReportDataService>();
+    builder.Services.AddTransient<IPresenceQueryHandlers, PureCloudPresenceQueryHandlers>();
+    builder.Services.AddTransient<IPresenceService, PureCloudPresenceService>();
+    
+    // derived
+    builder.Services.AddTransient<IEvaluationReportDataService, PureCloudEvaluationReportDataService>();
 }
 else
 {
+    // fundamentals
     builder.Services.AddTransient<IQualityQueryHandlers, PureCloudQualityQueryHandlers>();
     builder.Services.AddTransient<IQualityService, PureCloudQualityService>();
     builder.Services.AddTransient<IAnalyticsQueryHandlers, PureCloudAnalyticsQueryHandlers>();
     builder.Services.AddTransient<IAnalyticsService, PureCloudAnalyticsService>();
     builder.Services.AddTransient<IUsersQueryHandlers, PureCloudUsersQueryHandlers>();
     builder.Services.AddTransient<IUsersService, PureCloudUsersService>();
-    builder.Services.AddTransient<IReportDataService, PureCloudReportDataService>();
+    builder.Services.AddTransient<ISpeechTextQueryHandlers, PureCloudSpeechTextQueryHandlers>();
+    builder.Services.AddTransient<ISpeechTextAnalyticsService, PureCloudSpeechTextAnalyticsService>();
+    builder.Services.AddTransient<IPresenceQueryHandlers, PureCloudPresenceQueryHandlers>();
+    builder.Services.AddTransient<IPresenceService, PureCloudPresenceService>();
+    
+    // derived
+    builder.Services.AddTransient<IEvaluationReportDataService, PureCloudEvaluationReportDataService>();
 }
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

@@ -13,7 +13,7 @@ namespace GenesysCloud.Services.PureCloud.Fundamental;
 /// When methods are given parameters, this class is responsible for creating the query from those parameters and calling IUserQueryHandler.
 /// This fundamental class should only be called by derived services and authorizations should only be called at this level.
 /// It's permissible to shape returned data into dictionaries, lookups, etc., or return data as received.
-/// Responses should always as a ServiceResponse to bubble up handled exception messages and response ids.
+/// Responses are always a ServiceResponse to bubble up handled exception messages and response ids.
 /// </summary>
 internal sealed class PureCloudUsersService : IUsersService
 {

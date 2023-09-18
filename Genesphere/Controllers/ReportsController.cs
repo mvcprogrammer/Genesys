@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using GenesysCloud.Services.Contracts.Derived;
 
 namespace Genesphere.Controllers;
@@ -9,15 +10,15 @@ namespace Genesphere.Controllers;
 [Route("[controller]")]
 public sealed class ReportsController : ControllerBase
 {
-    private readonly IReportDataService _reportDataService;
+    private readonly IEvaluationReportDataService _evaluationReportDataService;
     
     /// <summary>
     /// Creates on demand report data for Customer Service
     /// </summary>
-    /// <param name="reportDataService">Dependency Injection for report data service.</param>
-    public ReportsController(IReportDataService reportDataService)
+    /// <param name="evaluationReportDataService">Dependency Injection for report data service.</param>
+    public ReportsController(IEvaluationReportDataService evaluationReportDataService)
     {
-        _reportDataService = reportDataService;
+        _evaluationReportDataService = evaluationReportDataService;
     }
 
     /// <summary>
@@ -29,11 +30,16 @@ public sealed class ReportsController : ControllerBase
     public IActionResult GetEvaluationData([FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
     {
         var divisions = new[] { "d176b581-76c3-4d66-9686-7e2233e8eeb5" };
-        var response = _reportDataService.GetEvaluationRecords(startTime, endTime, divisions, Array.Empty<string>());
-        
-        if (response.Success) 
+        var response = _evaluationReportDataService.GetEvaluationRecords(startTime, endTime, divisions, Array.Empty<string>());
+        return GenerateResponse(response);
+    }
+    
+    [Description("Generic method to handle ServiceReponse.Success")]
+    private IActionResult GenerateResponse<T>(ServiceResponse<T> response)
+    {
+        if(response.Success)
             return Ok(response);
-        
-        return BadRequest(response.ErrorMessage);
+
+        return BadRequest(new { error = $"Message:{response.ErrorMessage},Link:https://service.mvcprogrammer.com/new/{response.Id}"});
     }
 }

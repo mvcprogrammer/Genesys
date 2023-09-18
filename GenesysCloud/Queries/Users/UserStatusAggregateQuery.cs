@@ -19,6 +19,8 @@ public class UserStatusAggregateQuery
     /// The query data reflects the user's Genesys Cloud presence as well as their ACD routing status.
     /// For more details, refer to the official documentation: 
     /// <see href="https://developer.genesys.cloud/analyticsdatamanagement/analytics/aggregate/user-query"/>
+    /// Pay particular attention to query limitations:
+    /// <see href="https://developer.genesys.cloud/analyticsdatamanagement/analytics/aggregate/user-query#limitations"/>
     /// </summary>
     public UserAggregationQuery Build()
     {

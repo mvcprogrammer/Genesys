@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj": {}
+    "/Users/mvcprogrammer/Documents/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj": {}
   },
   "projects": {
-    "/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj": {
+    "/Users/mvcprogrammer/Documents/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj",
+        "projectUniqueName": "/Users/mvcprogrammer/Documents/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj",
         "projectName": "GenesysCloud",
-        "projectPath": "/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj",
+        "projectPath": "/Users/mvcprogrammer/Documents/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj",
         "packagesPath": "/Users/mvcprogrammer/.nuget/packages/",
-        "outputPath": "/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/obj/",
+        "outputPath": "/Users/mvcprogrammer/Documents/src/Genesys.Solution/GenesysCloud/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/mvcprogrammer/.nuget/NuGet/NuGet.Config"
