@@ -52,7 +52,7 @@ internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
         {
             while (pageCount >= currentPage || pageCount is Constants.Unknown)
             {
-                var response = _usersApi.GetUsers(pageSize,currentPage, userIds.ToList(), state:state);
+                var response = _usersApi.GetUsers(pageSize: pageSize, pageNumber: currentPage, id: userIds.ToList(), state:state);
                 userList.AddRange(response.Entities ?? Enumerable.Empty<User>());
                 pageCount = response.PageCount ?? Constants.FirstPage;
                 currentPage++;
@@ -77,7 +77,7 @@ internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
         {
             while (pageCount >= currentPage || pageCount is Constants.Unknown)
             {
-                var response = _usersApi.PostAnalyticsUsersDetailsQuery(query);
+                var response = _usersApi.PostAnalyticsUsersDetailsQuery(body: query);
                 analyticsUserDetailList.AddRange(response.UserDetails ?? Enumerable.Empty<AnalyticsUserDetail>());
                 
                 if (pageCount is Constants.Unknown)
@@ -100,7 +100,7 @@ internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
     {
         try
         {
-            var response = _usersApi.PostAnalyticsUsersAggregatesQuery(query);
+            var response = _usersApi.PostAnalyticsUsersAggregatesQuery(body: query);
             return SystemResponse.SuccessResponse(response.Results ?? new List<UserAggregateDataContainer>());
         }
         catch (Exception exception)

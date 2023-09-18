@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "uJeUL4BxcO8iHsX2ZjtBKzycqTIcI5jcuu7G1RHk59ZF1BlyqipYEy+1R9NvbCHySzuAVjakxb+c2JoezpedNg==",
+  "dgSpecHash": "blr1TsIp2unJq9wqYy7q8HdiSq+yBBB6GJ+2ME9/6EKPXgrMSvd05ShXFP/Jo5TTvw5Lt5alUuAkZrjY2RkXQA==",
   "success": true,
   "projectFilePath": "/Users/mvcprogrammer/Documents/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj",
   "expectedPackageFiles": [
     "/Users/mvcprogrammer/.nuget/packages/ini-parser/2.5.2/ini-parser.2.5.2.nupkg.sha512",
     "/Users/mvcprogrammer/.nuget/packages/newtonsoft.json/11.0.2/newtonsoft.json.11.0.2.nupkg.sha512",
-    "/Users/mvcprogrammer/.nuget/packages/purecloudplatform.client.v2/185.0.0/purecloudplatform.client.v2.185.0.0.nupkg.sha512",
+    "/Users/mvcprogrammer/.nuget/packages/purecloudplatform.client.v2/188.0.0/purecloudplatform.client.v2.188.0.0.nupkg.sha512",
     "/Users/mvcprogrammer/.nuget/packages/restsharp/110.2.0/restsharp.110.2.0.nupkg.sha512",
     "/Users/mvcprogrammer/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
     "/Users/mvcprogrammer/.nuget/packages/system.text.encodings.web/7.0.0/system.text.encodings.web.7.0.0.nupkg.sha512",

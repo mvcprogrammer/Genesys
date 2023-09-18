@@ -19,7 +19,7 @@ internal sealed class PureCloudQualityQueryHandlers : IQualityQueryHandlers
     {
         try
         {
-            var response = _qualityApi.GetQualityConversationEvaluation(conversationId, evaluationId, expand);
+            var response = _qualityApi.GetQualityConversationEvaluation(conversationId: conversationId, evaluationId: evaluationId, expand: expand);
             return SystemResponse.SuccessResponse(response ?? new EvaluationResponse());
         }
         catch (Exception exception)
