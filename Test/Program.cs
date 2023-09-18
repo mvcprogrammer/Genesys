@@ -71,7 +71,10 @@ var usersService = new PureCloudUsersService(usersServiceHandlers);
 var speechTextAnalyticsHandler = new PureCloudSpeechTextQueryHandlers();
 var speechTextAnalyticsService = new PureCloudSpeechTextAnalyticsService(speechTextAnalyticsHandler);
 
-var reportDataService = new PureCloudReportDataService(analyticService, qualityService, speechTextAnalyticsService);
+var reportDataService = new PureCloudEvaluationReportDataService(analyticService, qualityService, speechTextAnalyticsService);
+
+var presenceQueryHandlers = new PureCloudPresenceQueryHandlers();
+var presenceService = new PureCloudPresenceService(presenceQueryHandlers);
 
 var divisions = new[] { "d176b581-76c3-4d66-9686-7e2233e8eeb5" };
 var queue = queueProfileLookup.Keys.ToArray();

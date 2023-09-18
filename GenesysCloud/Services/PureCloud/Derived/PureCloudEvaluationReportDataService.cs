@@ -1,17 +1,28 @@
 using GenesysCloud.DTO.Response.Reports;
 using GenesysCloud.Mappers;
+using GenesysCloud.Queries.Reports.EvaluationReport;
 using GenesysCloud.Services.Contracts.Derived;
 using GenesysCloud.Services.Contracts.Fundamental;
 
 namespace GenesysCloud.Services.PureCloud.Derived;
 
-public sealed class PureCloudReportDataService : IReportDataService
+/// <summary>
+/// Evaluation Report Data Service may only invoke calls to fundamental services and cannot call Genesys API directly.
+/// The service can call multiple fundamental services and will always return DTO data; any call to this service must not be dependent on V2.Client.Models
+/// The query needed by the fundamental service must be created in the method unless service doesn't have a query param, then pass params as needed.
+/// Responses are always a ServiceResponse to bubble up handled exception messages, errors and response ids.
+/// </summary>
+public sealed class PureCloudEvaluationReportDataService : IEvaluationReportDataService
 {
     private readonly IAnalyticsService _analyticsService;
     private readonly IQualityService _qualityService;
     private readonly ISpeechTextAnalyticsService _speechTextAnalyticsService;
     
-    public PureCloudReportDataService(
+    private const string NEvaluationsKey = "nEvaluations";
+    private const string ConversationIdKey = "conversationId";
+    private const string EvaluationIdKey = "evaluationId";
+    
+    public PureCloudEvaluationReportDataService(
         IAnalyticsService analyticsService, 
         IQualityService qualityService,
         ISpeechTextAnalyticsService speechTextAnalyticsService)
@@ -21,12 +32,22 @@ public sealed class PureCloudReportDataService : IReportDataService
         _speechTextAnalyticsService = speechTextAnalyticsService;
     }
 
+    /// <summary>
+    /// <param name="startTime">Filters lower bound date when evaluation was created for agent by evaluator (usually previous day midnight UTC)</param>
+    /// <param name="endTime">Filters upper bound date when evaluation was created for agent by evaluator (usually current day midnight UTC)</param>
+    /// <param name="divisions">If divisions are supplied, will filter on that division. May be combined with queues. No nulls, use empty array if not used.</param>
+    /// <param name="queues">If queues are supplied, will filter on that queue. May be combined with divisions. No nulls, use empty array if not used</param>
+    /// <returns>A list of evaluation records consumed by evaluation report with agent scores, comments, questions and answers.</returns>
+    /// </summary>
     public ServiceResponse<List<EvaluationRecord>> GetEvaluationRecords(DateTime startTime, DateTime endTime,
         IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queues)
     {
         var interval = new MetricsInterval(startTime, endTime);
         
-        var response = _analyticsService.GetEvaluationAggregateData(interval, queues, divisions);
+        var queryBuilder = new GenesysEvaluationAggregateQuery(interval, queues, divisions);
+        var query = queryBuilder.Build();
+        
+        var response = _analyticsService.GetEvaluationAggregateData(query);
         var evaluationAggregateDataContainers = response.Data ?? new List<EvaluationAggregateDataContainer>();
         
         var evaluationRecords = new List<EvaluationRecord>();
@@ -37,17 +58,19 @@ public sealed class PureCloudReportDataService : IReportDataService
             var evaluationAggregateStatisticalResponses =
                 evaluationAggregateDataContainer.Data ?? new List<StatisticalResponse>();
 
-            foreach (var statisticalResponse in evaluationAggregateStatisticalResponses)
+            foreach (var metricDictionary in evaluationAggregateStatisticalResponses.Select(statisticalResponse => 
+                         statisticalResponse.Metrics.ToDictionary(x => x.Metric, x => x.Stats)))
             {
-                var metricDictionary = statisticalResponse.Metrics.ToDictionary(x => x.Metric, x => x.Stats);
-
-                if (metricDictionary.TryGetValue("nEvaluations", out var nEvaluations) is false) continue;
-                if (nEvaluations.Count is null or 0) continue;
-
-                if (evaluationAggregateDataGroupDictionary.TryGetValue("conversationId", out var conversationId) is false)
+                if (metricDictionary.TryGetValue(NEvaluationsKey, out var nEvaluations) is false)
+                    continue;
+                
+                if (nEvaluations.Count is null or 0) 
                     continue;
 
-                if (evaluationAggregateDataGroupDictionary.TryGetValue("evaluationId", out var evaluationId) is false)
+                if (evaluationAggregateDataGroupDictionary.TryGetValue(ConversationIdKey, out var conversationId) is false)
+                    continue;
+
+                if (evaluationAggregateDataGroupDictionary.TryGetValue(EvaluationIdKey, out var evaluationId) is false)
                     continue;
 
                 var evaluationResponse = _qualityService.GetConversationEvaluationDetail(conversationId, evaluationId, expand: "agent,evaluator,evaluationForm");

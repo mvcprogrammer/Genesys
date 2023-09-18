@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "NhMcQOXzFANgNGwm2rDdN+ThKLUJz0g3pdkOAkevfmAApeVk9Bd5WZB3NRI1bOPYCdY9/nxg1RMo+cEpao1H6Q==",
+  "dgSpecHash": "uJeUL4BxcO8iHsX2ZjtBKzycqTIcI5jcuu7G1RHk59ZF1BlyqipYEy+1R9NvbCHySzuAVjakxb+c2JoezpedNg==",
   "success": true,
-  "projectFilePath": "/Users/mvcprogrammer/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj",
+  "projectFilePath": "/Users/mvcprogrammer/Documents/src/Genesys.Solution/GenesysCloud/GenesysCloud.csproj",
   "expectedPackageFiles": [
     "/Users/mvcprogrammer/.nuget/packages/ini-parser/2.5.2/ini-parser.2.5.2.nupkg.sha512",
     "/Users/mvcprogrammer/.nuget/packages/newtonsoft.json/11.0.2/newtonsoft.json.11.0.2.nupkg.sha512",
