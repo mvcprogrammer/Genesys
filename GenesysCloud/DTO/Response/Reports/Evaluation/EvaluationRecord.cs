@@ -1,6 +1,6 @@
 using UserProfile = GenesysCloud.DTO.Response.Users.UserProfile;
 
-namespace GenesysCloud.DTO.Response.Reports;
+namespace GenesysCloud.DTO.Response.Reports.Evaluation;
 
 public sealed record EvaluationRecord
 {

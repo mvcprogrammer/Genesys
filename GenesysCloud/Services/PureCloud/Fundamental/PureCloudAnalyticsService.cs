@@ -43,6 +43,15 @@ public class PureCloudAnalyticsService : IAnalyticsService
         });
     }
 
+    public ServiceResponse<List<SurveyAggregateDataContainer>> GetSurveyAggregateData(SurveyAggregationQuery query)
+    {
+        return AuthorizedAction(() =>
+        {
+            var response = _analyticsQueryHandlers.SurveyAggregatesQuery(query);
+            return response;
+        });
+    }
+
     public ServiceResponse<List<AnalyticsConversationWithoutAttributes>> GetConversationDetails(ConversationQuery query)
     {
         return AuthorizedAction(() =>

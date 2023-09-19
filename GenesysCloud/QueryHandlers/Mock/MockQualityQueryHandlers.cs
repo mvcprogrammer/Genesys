@@ -8,4 +8,9 @@ public class MockQualityQueryHandlers : IQualityQueryHandlers
     {
         throw new NotImplementedException();
     }
+
+    public ServiceResponse<List<Survey>> ConversationSurveyDetail(string conversationId)
+    {
+        throw new NotImplementedException();
+    }
 }

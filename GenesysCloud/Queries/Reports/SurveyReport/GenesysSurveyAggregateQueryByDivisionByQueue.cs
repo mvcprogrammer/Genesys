@@ -11,11 +11,11 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
     /// For more details, refer to the official documentation: 
     /// <see href="https://developer.genesys.cloud/useragentman/quality/"/>
     /// </summary>
-    public GenesysSurveyAggregateQueryByDivisionByQueue(MetricsInterval interval, IReadOnlyCollection<string> queueIds, IReadOnlyCollection<string> divisions)
+    public GenesysSurveyAggregateQueryByDivisionByQueue(MetricsInterval interval, IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queueIds)
     {
         _interval = interval ?? throw new ArgumentNullException(nameof(interval), "Interval cannot be null");
-        _queueIds = queueIds ?? throw new ArgumentNullException(nameof(queueIds), "Queue Id's cannot be null (use Array.Empty<string>())");
         _divisionIds = divisions ?? throw new ArgumentNullException(nameof(divisions), "Divisions cannot be null (use Array.Empty<string>())");
+        _queueIds = queueIds ?? throw new ArgumentNullException(nameof(queueIds), "Queue Id's cannot be null (use Array.Empty<string>())");
     }
     
     /// <summary>
@@ -46,6 +46,16 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
                 })
             .ToList();
 
+        var surveyPredicates = new List<SurveyAggregateQueryPredicate>
+        {
+            new()
+            {
+                Dimension = SurveyAggregateQueryPredicate.DimensionEnum.Surveystatus,
+                Operator = SurveyAggregateQueryPredicate.OperatorEnum.Matches,
+                Value = "Finished"
+            }
+        };
+        
         var clauses = new List<SurveyAggregateQueryClause>
         {
             new()
@@ -57,6 +67,11 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
             {
                 Predicates = queuePredicates,
                 Type = SurveyAggregateQueryClause.TypeEnum.Or
+            },
+            new()
+            {
+                Predicates = surveyPredicates,
+                Type = SurveyAggregateQueryClause.TypeEnum.And
             }
         };
 
@@ -75,9 +90,8 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
         
         var groupBy = new List<SurveyAggregationQuery.GroupByEnum>
         {
-            SurveyAggregationQuery.GroupByEnum.Queueid,
-            SurveyAggregationQuery.GroupByEnum.Userid,
-            SurveyAggregationQuery.GroupByEnum.Surveyerrorreason
+            SurveyAggregationQuery.GroupByEnum.Conversationid,
+            SurveyAggregationQuery.GroupByEnum.Userid
         };
 
         return new SurveyAggregationQuery

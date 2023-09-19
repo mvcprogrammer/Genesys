@@ -1,7 +1,8 @@
-using GenesysCloud.DTO.Response.Reports;
+using GenesysCloud.DTO.Response.Reports.Evaluation;
+using EvaluationScoringSet = GenesysCloud.DTO.Response.Reports.Evaluation.EvaluationScoringSet;
 using UserProfile = GenesysCloud.DTO.Response.Users.UserProfile;
 
-namespace GenesysCloud.Mappers;
+namespace GenesysCloud.Mappers.Reports.Evaluations;
 
 public sealed class MapperEvaluationResponseToEvaluationRecords
 {
@@ -51,13 +52,9 @@ public sealed class MapperEvaluationResponseToEvaluationRecords
             foreach (var answer in answerGroup.Values.Where(answer => answer.MarkedNA is not true))
             {
                 if (!dictionaryQuestionIdToQuestion.TryGetValue(answer.QuestionId, out var evaluationQuestion) ||
-                    !dictionaryAnswerOptionIdToText.TryGetValue(answer.AnswerId, out var evaluationAnswer))
-                {
-                    return SystemResponse.FailureResponse<EvaluationRecord>(
-                        $"Failed to find evaluation question or answer");
-                }
+                    !dictionaryAnswerOptionIdToText.TryGetValue(answer.AnswerId, out var evaluationAnswer)) { continue; }
 
-                var scoringSet = new GenesysCloud.DTO.Response.Reports.EvaluationScoringSet
+                var scoringSet = new EvaluationScoringSet
                 {
                     Question = evaluationQuestion,
                     Answer = evaluationAnswer,

@@ -1,5 +1,7 @@
 using GenesysCloud.DTO.Response.Reports;
+using GenesysCloud.DTO.Response.Reports.Evaluation;
 using GenesysCloud.Mappers;
+using GenesysCloud.Mappers.Reports.Evaluations;
 using GenesysCloud.Queries.Reports.EvaluationReport;
 using GenesysCloud.Services.Contracts.Derived;
 using GenesysCloud.Services.Contracts.Fundamental;
@@ -10,6 +12,7 @@ namespace GenesysCloud.Services.PureCloud.Derived;
 /// Evaluation Report Data Service may only invoke calls to fundamental services and cannot call Genesys API directly.
 /// The service can call multiple fundamental services and will always return DTO data; any call to this service must not be dependent on V2.Client.Models
 /// The query needed by the fundamental service must be created in the method unless service doesn't have a query param, then pass params as needed.
+/// Always use named parameters on API calls to Genesys
 /// Responses are always a ServiceResponse to bubble up handled exception messages, errors and response ids.
 /// </summary>
 public sealed class PureCloudEvaluationReportDataService : IEvaluationReportDataService
@@ -55,8 +58,7 @@ public sealed class PureCloudEvaluationReportDataService : IEvaluationReportData
         foreach (var evaluationAggregateDataContainer in evaluationAggregateDataContainers)
         {
             var evaluationAggregateDataGroupDictionary = evaluationAggregateDataContainer.Group;
-            var evaluationAggregateStatisticalResponses =
-                evaluationAggregateDataContainer.Data ?? new List<StatisticalResponse>();
+            var evaluationAggregateStatisticalResponses = evaluationAggregateDataContainer.Data ?? new List<StatisticalResponse>();
 
             foreach (var metricDictionary in evaluationAggregateStatisticalResponses.Select(statisticalResponse => 
                          statisticalResponse.Metrics.ToDictionary(x => x.Metric, x => x.Stats)))

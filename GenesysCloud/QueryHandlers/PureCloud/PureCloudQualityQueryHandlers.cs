@@ -28,4 +28,17 @@ internal sealed class PureCloudQualityQueryHandlers : IQualityQueryHandlers
                 $"conversationId:{conversationId}, evaluationId:{evaluationId}, expand:{expand}");
         }
     }
+    
+    public ServiceResponse<List<Survey>> ConversationSurveyDetail(string conversationId)
+    {
+        try
+        {
+            var response = _qualityApi.GetQualityConversationSurveys(conversationId);
+            return SystemResponse.SuccessResponse(response ?? new List<Survey>());
+        }
+        catch (Exception exception)
+        {
+            return SystemResponse.ExceptionHandler.HandleException<List<Survey>>(exception, $"conversationId:{conversationId}");
+        }
+    }
 }

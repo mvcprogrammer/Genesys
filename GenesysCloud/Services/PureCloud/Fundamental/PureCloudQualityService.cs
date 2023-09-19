@@ -35,6 +35,15 @@ public class PureCloudQualityService : IQualityService
         });
     }
     
+    public ServiceResponse<List<Survey>> GetConversationSurveyDetail(string conversationId)
+    {
+        return AuthorizedAction(() =>
+        {
+            var response = _qualityQueryHandlers.ConversationSurveyDetail(conversationId);
+            return response;
+        });
+    }
+    
     /// <summary>
     /// /// Gets an authorization token before making calls.
     /// </summary>

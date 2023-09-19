@@ -15,8 +15,8 @@ using PureCloudPlatform.Client.V2.Api;
 
 var interval = new MetricsInterval
 {
-    StartTimeUtc = new DateTime(2023, 09, 8, 0, 0, 0),
-    EndTimeUtc = new DateTime(2023, 09, 9, 0, 0, 0)
+    StartTimeUtc = new DateTime(2023, 09, 19, 0, 0, 0).ToUniversalTime(),
+    EndTimeUtc = new DateTime(2023, 09, 20, 0, 0, 0).ToUniversalTime()
 };
 
 var queueProfileLookup = new Dictionary<string, QueueProfile>
@@ -57,7 +57,7 @@ var usersStatusDetail = usersStatusDetailResponse.Data;
 */
 #endregion
 
-#region Reports
+#region EvaluationReports
 
 var analyticsQueryHandlers = new PureCloudAnalyticsQueryHandlers();
 var analyticService = new PureCloudAnalyticsService(analyticsQueryHandlers);
@@ -71,14 +71,14 @@ var usersService = new PureCloudUsersService(usersServiceHandlers);
 var speechTextAnalyticsHandler = new PureCloudSpeechTextQueryHandlers();
 var speechTextAnalyticsService = new PureCloudSpeechTextAnalyticsService(speechTextAnalyticsHandler);
 
-var reportDataService = new PureCloudEvaluationReportDataService(analyticService, qualityService, speechTextAnalyticsService);
+var evaluationReportDataService = new PureCloudEvaluationReportDataService(analyticService, qualityService, speechTextAnalyticsService);
 
 var presenceQueryHandlers = new PureCloudPresenceQueryHandlers();
 var presenceService = new PureCloudPresenceService(presenceQueryHandlers);
 
 var divisions = new[] { "d176b581-76c3-4d66-9686-7e2233e8eeb5" };
-var queue = queueProfileLookup.Keys.ToArray();
-var evaluationRecordsResponse = reportDataService.GetEvaluationRecords(interval.StartTimeUtc, interval.EndTimeUtc, divisions, queue);
+/*var queue = queueProfileLookup.Keys.ToArray();
+var evaluationRecordsResponse = evaluationReportDataService.GetEvaluationRecords(interval.StartTimeUtc, interval.EndTimeUtc, divisions, queue);
 
 if (evaluationRecordsResponse.Success is false || evaluationRecordsResponse.Data is null)
     return;
@@ -86,7 +86,16 @@ if (evaluationRecordsResponse.Success is false || evaluationRecordsResponse.Data
 var evaluationRecords = evaluationRecordsResponse.Data;
 
 var jsonData = evaluationRecords.JsonSerializeToString(evaluationRecords.GetType());
-Console.WriteLine(jsonData);
+Console.WriteLine(jsonData);*/
 #endregion
+
+
+var surveyReportsDataService = new PureCloudSurveyReportDataService(analyticService, qualityService, usersService);
+var surveyReportResponse = surveyReportsDataService.GetSurveyData(interval.StartTimeUtc, interval.EndTimeUtc, divisions, Array.Empty<string>());
+if (surveyReportResponse.Success is false || surveyReportResponse.Data is null)
+    return;
+var surveyRecords = surveyReportResponse.Data;
+var jsonData = surveyRecords.JsonSerializeToString(surveyRecords.GetType());
+Console.WriteLine(jsonData);
 
 Console.WriteLine($"{ClassHelpers.GetMethodName(1)} completed");

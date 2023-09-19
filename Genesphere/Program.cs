@@ -25,6 +25,7 @@ if (environment.IsDevelopment())
     
     // derived
     builder.Services.AddTransient<IEvaluationReportDataService, PureCloudEvaluationReportDataService>();
+    builder.Services.AddTransient<ISurveyReportDataService, PureCloudSurveyReportDataService>();
 }
 else
 {
@@ -42,6 +43,7 @@ else
     
     // derived
     builder.Services.AddTransient<IEvaluationReportDataService, PureCloudEvaluationReportDataService>();
+    builder.Services.AddTransient<ISurveyReportDataService, PureCloudSurveyReportDataService>();
 }
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

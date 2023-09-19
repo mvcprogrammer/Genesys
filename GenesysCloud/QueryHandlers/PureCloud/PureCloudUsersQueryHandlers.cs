@@ -45,14 +45,14 @@ internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
         const int pageSize = 100;
         const string state = "any";
         var pageCount = Constants.Unknown;
-        var currentPage = Constants.FirstPage;
+        var currentPage = 0;
         var userList = new List<User>();
 
         try
         {
-            while (pageCount >= currentPage || pageCount is Constants.Unknown)
+            while (pageCount > currentPage || pageCount is Constants.Unknown)
             {
-                var response = _usersApi.GetUsers(pageSize: pageSize, pageNumber: currentPage, id: userIds.ToList(), state:state);
+                var response = _usersApi.GetUsers(pageSize: pageSize, pageNumber: currentPage, id: userIds.Skip(pageSize*currentPage).Take(pageSize).ToList(), state:state);
                 userList.AddRange(response.Entities ?? Enumerable.Empty<User>());
                 pageCount = response.PageCount ?? Constants.FirstPage;
                 currentPage++;
