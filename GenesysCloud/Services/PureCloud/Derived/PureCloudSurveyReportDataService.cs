@@ -3,6 +3,7 @@ using GenesysCloud.Mappers.Reports.Surveys;
 using GenesysCloud.Queries.Reports.SurveyReport;
 using GenesysCloud.Services.Contracts.Derived;
 using GenesysCloud.Services.Contracts.Fundamental;
+using UserProfile = GenesysCloud.DTO.Response.Users.UserProfile;
 
 namespace GenesysCloud.Services.PureCloud.Derived;
 
@@ -18,65 +19,110 @@ public sealed class PureCloudSurveyReportDataService : ISurveyReportDataService
     private readonly IAnalyticsService _analyticsService;
     private readonly IQualityService _qualityService;
     private readonly IUsersService _usersService;
+    private readonly IRoutingService _routingService;
     
-    private const string NEvaluationsKey = "nSurveys";
     private const string ConversationIdKey = "conversationId";
-    private const string UserIdKey = "userId";
-    private const string EvaluationIdKey = "surveyId";
 
-    public PureCloudSurveyReportDataService(IAnalyticsService analyticsService, IQualityService qualityService, IUsersService usersService)
+    public PureCloudSurveyReportDataService(
+        IAnalyticsService analyticsService, 
+        IQualityService qualityService, 
+        IUsersService usersService,
+        IRoutingService routingService)
     {
         _analyticsService = analyticsService;
         _qualityService = qualityService;
         _usersService = usersService;
+        _routingService = routingService;
     }
 
-    public ServiceResponse<List<SurveyRecord>> GetSurveyData(DateTime startTime, DateTime endTime, IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queues)
+    /// <summary>
+    /// This method returns all the data needed for a survey report.
+    /// It first gets a survey aggregate for the specified interval to get the agents who had a survey(s) done on an interaction in which they participated.
+    /// The aggregate is used to fetch the user profiles so this can be joined in the mapping method.
+    /// The mapper creates the DTO. Only genesys data goes in, only Arise data comes out.
+    /// Responses are always a ServiceResponse to bubble up handled exception messages, errors and response ids.
+    /// <param name="startTime">Interval start time, usually beginning of previous day</param>
+    /// <param name="endTime">Interval end time, usually the beginning of the current day</param>
+    /// <param name="divisions">Will filter to only users within a division, not required but must be empty collection if not used.</param>
+    /// <param name="queues">Will filter to only users in listed queues, not required but mut be empty collection if not used.</param>
+    /// </summary>
+    public List<SurveyRecord> GetSurveyData(DateTime startTime, DateTime endTime,
+        IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queues)
     {
         var interval = new MetricsInterval(startTime, endTime);
 
-        var queryBuilder = new GenesysSurveyAggregateQueryByDivisionByQueue(interval, divisions, queues);
-        var query = queryBuilder.Build();
-
-        var response = _analyticsService.GetSurveyAggregateData(query);
-        var surveyAggregateDataContainers = response.Data ?? new List<SurveyAggregateDataContainer>();
-
-        var userList = surveyAggregateDataContainers.SelectMany(dataContainers => 
-            dataContainers.Group.Where(group => group.Key.Equals("userId")))
-            .Select(x => x.Value)
-            .Distinct()
-            .ToList();
-
-        var userLookupResponse = _usersService.GetAgentProfileLookup(userList);
-        if (userLookupResponse.Success is false || userLookupResponse.Data is null)
-            return SystemResponse.FailureResponse<List<SurveyRecord>>(response.ErrorMessage);
-        var userLookup = userLookupResponse.Data;
-
+        var queueProfiles = _routingService.GetQueueProfileLookup(divisions.ToList());
+        var surveyAggregateData = GetSurveyAggregateData(interval, divisions, queues);
+        var userProfiles = GetAgentsWithSurveys(surveyAggregateData);
+        var conversationDetailDictionary = GetConversationDetails(surveyAggregateData, interval);
+        
         var surveyRecords = new List<SurveyRecord>();
 
-        foreach (var surveyAggregateDataContainer in surveyAggregateDataContainers)
+        foreach (var surveyAggregateDataContainer in surveyAggregateData)
         {
             var surveyAggregateDataGroupDictionary = surveyAggregateDataContainer.Group;
 
             if (surveyAggregateDataGroupDictionary.TryGetValue(ConversationIdKey, out var conversationId) is false)
-                continue;
+                throw new Exception("Failed to find interaction key.");
 
-            var conversationQualityResponses = _qualityService.GetConversationSurveyDetail(conversationId);
-            if (conversationQualityResponses.Success is false || conversationQualityResponses.Data is null)
-                return SystemResponse.FailureResponse<List<SurveyRecord>>(response.ErrorMessage, response.ErrorCode);
-
-            if (surveyAggregateDataGroupDictionary.TryGetValue(UserIdKey, out var userId) is false) 
-                continue;
-
-            if (userLookup.TryGetValue(userId, out var profile) is false) 
-                continue;
+            var surveyDetail = _qualityService.GetConversationSurveyDetail(conversationId);
             
-            var mapper = new MapperSurveyResponseToSurveyRecord(conversationQualityResponses.Data, profile, conversationId);
-            var surveyRecordsResponse = mapper.Map();
-            if (surveyRecordsResponse.Success is false || surveyRecordsResponse.Data is null) continue;
-            surveyRecords.AddRange(surveyRecordsResponse.Data);
+            var mapper = new MapperSurveyResponseToSurveyRecord(surveyAggregateDataContainer, surveyDetail, userProfiles, queueProfiles, conversationDetailDictionary);
+            var surveyRecord = mapper.Map();
+            surveyRecords.AddRange(surveyRecord);
         }
+        
+        return ServiceResponse.LogAndReturnResponse(surveyRecords, stackTraceIndex: 3);
+    }
 
-        return SystemResponse.SuccessResponse(surveyRecords);
+    private List<SurveyAggregateDataContainer> GetSurveyAggregateData(MetricsInterval interval, IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queues)
+    {
+        var surveyQueryBuilder = new GenesysSurveyAggregateQuery(interval, divisions, queues);
+        var surveyQuery = surveyQueryBuilder.Build();
+        var surveyAggregateData = _analyticsService.GetSurveyAggregateData(surveyQuery);
+        return ServiceResponse.LogAndReturnResponse(surveyAggregateData, stackTraceIndex: 3);
+    }
+
+    private Dictionary<string, UserProfile> GetAgentsWithSurveys(IEnumerable<SurveyAggregateDataContainer> surveyAggregateData)
+    {
+        var userList = surveyAggregateData.SelectMany(dataContainers => 
+                dataContainers.Group.Where(group => group.Key.Equals("userId")))
+            .Select(x => x.Value)
+            .Distinct()
+            .ToList();
+
+        var agentProfileLookup = _usersService.GetAgentProfileLookup(userList);
+        return ServiceResponse.LogAndReturnResponse(agentProfileLookup, stackTraceIndex: 3);
+    }
+
+    private Dictionary<string, AnalyticsConversationWithoutAttributes> GetConversationDetails(IEnumerable<SurveyAggregateDataContainer> surveyAggregateData, MetricsInterval interval)
+    {
+        // con only take 200 conversation ids at a time
+        const int take = 200;
+        
+        //surveys don't always happen on day of conversation, so search back up to 10 days.
+        var tenDayInterval = new MetricsInterval { EndTimeUtc = interval.EndTimeUtc, StartTimeUtc = interval.StartTimeUtc - new TimeSpan(10, 0, 0, 0) };
+        
+        var conversationList = surveyAggregateData.SelectMany(dataContainers => 
+                dataContainers.Group.Where(group => group.Key.Equals("conversationId")))
+            .Select(x => x.Value)
+            .Distinct()
+            .ToArray();
+
+        var conversationDetails = new List<AnalyticsConversationWithoutAttributes>();
+        
+        for (var skip = 0; skip < conversationList.Length; skip += take)
+        {
+            var conversationIds = conversationList.Skip(skip).Take(take).ToArray();
+            var conversationQueryBuilder = new GenesysConversationDetailQuery(tenDayInterval, conversationIds);
+            var conversationQuery = conversationQueryBuilder.Build();
+            var conversationsDetail = _analyticsService.GetConversationDetails(conversationQuery);
+            conversationDetails.AddRange(conversationsDetail);
+        }
+        
+        var conversationDetailDictionary = conversationDetails.ToDictionary(x =>
+            x.ConversationId, x => x);
+
+        return ServiceResponse.LogAndReturnResponse(conversationDetailDictionary, stackTraceIndex: 3);
     }
 }

@@ -17,7 +17,7 @@ public sealed class MapperEvaluationResponseToEvaluationRecords
         _conversationMetrics = conversationMetrics;
     }
 
-    public ServiceResponse<EvaluationRecord> Map()
+    public EvaluationRecord Map()
     {
         TimeSpan? conversationTimeSpan =
             _evaluationData.ConversationEndDate - _evaluationData.ConversationDate ?? new TimeSpan(0);
@@ -102,6 +102,6 @@ public sealed class MapperEvaluationResponseToEvaluationRecords
             EvaluationGroups = evaluationGroups
         };
 
-        return SystemResponse.SuccessResponse(evaluationRecord);
+        return evaluationRecord;
     }
 }

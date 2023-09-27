@@ -5,8 +5,12 @@ namespace GenesysCloud.DTO.Response.Reports.Survey;
 public sealed record SurveyRecord
 {
     public UserProfile? AgentProfile { get; init; }
+    public string QueueName { get; init; } = string.Empty;
+    public string MediaType { get; init; } = string.Empty;
     public string CompletedDate { get; init; } = string.Empty;
     public string InteractionLink { get; init; } = string.Empty;
+    public string ExternalTag { get; init; } = string.Empty;
+    public string InteractionStartTime { get; init; } = string.Empty;
     public SurveyForm Form { get; init; } = new();
 }
 
@@ -19,6 +23,7 @@ public sealed record SurveyForm
     public string Language { get; init; } = string.Empty;
     public string ModifiedDate { get; init; } = string.Empty;
     public bool Published { get; init; }
+    public string TotalScore { get; init; } = string.Empty;
     public List<SurveyGroup> SurveyGroups = new();
 }
 public sealed record SurveyGroup

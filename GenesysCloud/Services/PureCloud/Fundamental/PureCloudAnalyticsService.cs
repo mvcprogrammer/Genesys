@@ -1,7 +1,6 @@
 using GenesysCloud.QueryHandlers.Contracts;
 using GenesysCloud.Services.Contracts.Fundamental;
 using GenesysCloud.Services.PureCloud.Static;
-using PureCloudPlatform.Client.V2.Client;
 
 namespace GenesysCloud.Services.PureCloud.Fundamental;
 
@@ -16,65 +15,38 @@ namespace GenesysCloud.Services.PureCloud.Fundamental;
 public class PureCloudAnalyticsService : IAnalyticsService
 {
     private readonly IAnalyticsQueryHandlers _analyticsQueryHandlers;
-    private const string NotAuthorized = "Not Authorized";
-    private bool _isAuthorized;
     
     public PureCloudAnalyticsService(IAnalyticsQueryHandlers analyticsQueryHandlers)
     {
         _analyticsQueryHandlers = analyticsQueryHandlers;
     }
+
+    public List<EvaluationAggregateDataContainer> GetEvaluationAggregateData(EvaluationAggregationQuery query)
+    {
+        return AuthorizedAction(() => ServiceResponse.LogAndReturnResponse(_analyticsQueryHandlers.EvaluationAggregationQuery(query)));
+    }
+
+    public List<SurveyAggregateDataContainer> GetSurveyAggregateData(SurveyAggregationQuery query)
+    {
+        return AuthorizedAction(() => ServiceResponse.LogAndReturnResponse(_analyticsQueryHandlers.SurveyAggregatesQuery(query)));
+    }
+
+    public List<AnalyticsConversationWithoutAttributes> GetConversationDetails(ConversationQuery query)
+    {
+        return AuthorizedAction(() => ServiceResponse.LogAndReturnResponse(_analyticsQueryHandlers.ConversationDetailQuery(query)));
+    }
     
     /// <summary>
     /// This method ensures all calls have authorization and handles not authorized responses.
+    /// <param name="action">
+    /// This delegate will invoke its action if authorized=true
+    /// </param>
     /// </summary>
-    private ServiceResponse<T> AuthorizedAction<T>(Func<ServiceResponse<T>> action)
+    private static T AuthorizedAction<T>(Func<T> action)
     {
-        return Authorized()
-            ? action() 
-            : SystemResponse.FailureResponse<T>(NotAuthorized, (int)HttpStatusCode.Unauthorized);
-    }
-
-    public ServiceResponse<List<EvaluationAggregateDataContainer>> GetEvaluationAggregateData(EvaluationAggregationQuery query)
-    {
-        return AuthorizedAction(() =>
-        {
-            var response = _analyticsQueryHandlers.EvaluationAggregationQuery(query);
-            return response;
-        });
-    }
-
-    public ServiceResponse<List<SurveyAggregateDataContainer>> GetSurveyAggregateData(SurveyAggregationQuery query)
-    {
-        return AuthorizedAction(() =>
-        {
-            var response = _analyticsQueryHandlers.SurveyAggregatesQuery(query);
-            return response;
-        });
-    }
-
-    public ServiceResponse<List<AnalyticsConversationWithoutAttributes>> GetConversationDetails(ConversationQuery query)
-    {
-        return AuthorizedAction(() =>
-        {
-            var q = new ConversationQuery();
-            var response = _analyticsQueryHandlers.ConversationDetailQuery(q);
-            return response;
-        });
-    }
-    
-    /// <summary>
-    /// /// Gets an authorization token before making calls.
-    /// </summary>
-    private bool Authorized()
-    {
-        if (_isAuthorized) return true;
+        if (AuthorizeService.IsAuthorized())
+            return action();
         
-        var authorizeResponse = AuthorizeService.Authorize(
-            clientId: "6cad8911-28ca-40ee-97f5-01136dba9087",
-            clientSecret: "44hAG2qlkWCCfUVHU7xnZgL323OyaQ7KKIi297s25eY",
-            cloudRegion: PureCloudRegionHosts.eu_west_2);
-
-        _isAuthorized = authorizeResponse is { Success: true, Data: true };
-        return _isAuthorized;
+        throw new UnauthorizedAccessException(Constants.NotAuthorized);
     }
 }

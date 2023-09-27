@@ -15,7 +15,7 @@ internal sealed class PureCloudPresenceQueryHandlers : IPresenceQueryHandlers
 {
     private readonly PresenceApi _presenceApi = new();
     
-    public ServiceResponse<List<OrganizationPresence>> GetPresenceDefinitions()
+    public List<OrganizationPresence> GetPresenceDefinitions()
     {
         var pageCount = Constants.Unknown;
         var currentPage = Constants.FirstPage;
@@ -32,11 +32,12 @@ internal sealed class PureCloudPresenceQueryHandlers : IPresenceQueryHandlers
                 currentPage++;
             }
 
-            return SystemResponse.SuccessResponse(organizationPresenceList);
+            return ServiceResponse.LogAndReturnResponse(organizationPresenceList);
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<List<OrganizationPresence>>(exception);
+            ServiceResponse.ExceptionHandler.HandleException<List<OrganizationPresence>>(exception);
+            throw;
         }
     }
 }

@@ -4,9 +4,7 @@ namespace GenesysCloud.Services.Contracts.Fundamental;
 
 public interface IUsersService
 {
-    ServiceResponse<List<User>> GetUsers();
-    public ServiceResponse<Dictionary<string, UserProfile>> GetAgentProfileLookup();
-    public ServiceResponse<Dictionary<string, UserProfile>> GetAgentProfileLookup(IReadOnlyCollection<string>userIds);
-    ServiceResponse<List<AnalyticsUserDetail>> GetUsersStatusDetail(MetricsInterval interval, string[] userIds);
-    ServiceResponse<List<UserAggregateDataContainer>> GetUserStatusAggregates(MetricsInterval interval, string[] userIds, string granularity);
+    public Dictionary<string, UserProfile> GetAgentProfileLookup(IReadOnlyCollection<string>userIds);
+    List<AnalyticsUserDetail> GetUsersStatusDetail(MetricsInterval interval, string[] userIds);
+    List<UserAggregateDataContainer> GetUserStatusAggregates(MetricsInterval interval, string[] userIds, string granularity);
 }

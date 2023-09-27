@@ -8,55 +8,33 @@ namespace GenesysCloud.Services.PureCloud.Fundamental;
 public class PureCloudQualityService : IQualityService
 {
     private readonly IQualityQueryHandlers _qualityQueryHandlers;
-    private const string NotAuthorized = "Not Authorized";
-    private bool _isAuthorized;
     
     public PureCloudQualityService(IQualityQueryHandlers qualityQueryHandlers)
     {
-        _qualityQueryHandlers = qualityQueryHandlers;
+        _qualityQueryHandlers = qualityQueryHandlers ?? throw new ArgumentException("Quality Query Handler Cannot be null.");
+    }
+
+    public EvaluationResponse GetConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
+    {
+        return AuthorizedAction(() => ServiceResponse.LogAndReturnResponse(_qualityQueryHandlers.ConversationEvaluationDetail(conversationId, evaluationId, expand)));
+    }
+    
+    public List<Survey> GetConversationSurveyDetail(string conversationId)
+    {
+        return AuthorizedAction(() => ServiceResponse.LogAndReturnResponse(_qualityQueryHandlers.ConversationSurveyDetail(conversationId)));
     }
     
     /// <summary>
     /// This method ensures all calls have authorization and handles not authorized responses.
+    /// <param name="action">
+    /// This delegate will invoke its action if authorized=true
+    /// </param>
     /// </summary>
-    private ServiceResponse<T> AuthorizedAction<T>(Func<ServiceResponse<T>> action)
+    private static T AuthorizedAction<T>(Func<T> action)
     {
-        return Authorized()
-            ? action() 
-            : SystemResponse.FailureResponse<T>(NotAuthorized, (int)HttpStatusCode.Unauthorized);
-    }
-
-    public ServiceResponse<EvaluationResponse> GetConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
-    {
-        return AuthorizedAction(() =>
-        {
-            var response = _qualityQueryHandlers.ConversationEvaluationDetail(conversationId, evaluationId, expand);
-            return response;
-        });
-    }
-    
-    public ServiceResponse<List<Survey>> GetConversationSurveyDetail(string conversationId)
-    {
-        return AuthorizedAction(() =>
-        {
-            var response = _qualityQueryHandlers.ConversationSurveyDetail(conversationId);
-            return response;
-        });
-    }
-    
-    /// <summary>
-    /// /// Gets an authorization token before making calls.
-    /// </summary>
-    private bool Authorized()
-    {
-        if (_isAuthorized) return true;
+        if (AuthorizeService.IsAuthorized())
+            return action();
         
-        var authorizeResponse = AuthorizeService.Authorize(
-            clientId: "6cad8911-28ca-40ee-97f5-01136dba9087",
-            clientSecret: "44hAG2qlkWCCfUVHU7xnZgL323OyaQ7KKIi297s25eY",
-            cloudRegion: PureCloudRegionHosts.eu_west_2);
-
-        _isAuthorized = authorizeResponse is { Success: true, Data: true };
-        return _isAuthorized;
+        throw new UnauthorizedAccessException(Constants.NotAuthorized);
     }
 }

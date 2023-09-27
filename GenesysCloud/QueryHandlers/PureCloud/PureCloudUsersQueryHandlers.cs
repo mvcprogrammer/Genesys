@@ -14,33 +14,8 @@ namespace GenesysCloud.QueryHandlers.PureCloud;
 internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
 {
     private readonly UsersApi _usersApi = new();
-
-    public ServiceResponse<List<User>> GetAllUsers(int pageSize = 100, string state = "any")
-    {
-        var pageCount = Constants.Unknown;
-        var currentPage = Constants.FirstPage;
-        var userList = new List<User>();
-
-        try
-        {
-            while (pageCount >= currentPage || pageCount is Constants.Unknown)
-            {
-                var response = _usersApi.GetUsers(pageNumber: currentPage, pageSize: pageSize, state: state);
-                userList.AddRange(response.Entities ?? Enumerable.Empty<User>());
-                pageCount = response.PageCount ?? Constants.FirstPage;
-                currentPage++;
-            }
-
-            return SystemResponse.SuccessResponse(userList);
-        }
-        catch (Exception exception)
-        {
-            return SystemResponse.ExceptionHandler.HandleException<List<User>>(exception,
-                $"pageNumber:{currentPage}, pageSize:{pageSize}, state:{state}");
-        }
-    }
     
-    public ServiceResponse<List<User>> GetUsers(IReadOnlyCollection<string> userIds)
+    public IEnumerable<User> GetUsers(IReadOnlyCollection<string> userIds)
     {
         const int pageSize = 100;
         const string state = "any";
@@ -54,20 +29,20 @@ internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
             {
                 var response = _usersApi.GetUsers(pageSize: pageSize, pageNumber: currentPage, id: userIds.Skip(pageSize*currentPage).Take(pageSize).ToList(), state:state);
                 userList.AddRange(response.Entities ?? Enumerable.Empty<User>());
-                pageCount = response.PageCount ?? Constants.FirstPage;
+                pageCount = (int)Math.Ceiling((double)userIds.Count / pageSize);
                 currentPage++;
             }
 
-            return SystemResponse.SuccessResponse(userList);
+            return userList;
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<List<User>>(exception,
-                $"pageNumber:{currentPage}, pageSize:{pageSize}, state:{state}");
+            ServiceResponse.ExceptionHandler.HandleException<List<User>>(exception, $"pageNumber:{currentPage}, pageSize:{pageSize}, state:{state}");
+            throw;
         }
     }
 
-    public ServiceResponse<List<AnalyticsUserDetail>> GetUsersStatusDetail(UserDetailsQuery query)
+    public List<AnalyticsUserDetail> GetUsersStatusDetail(UserDetailsQuery query)
     {
         var pageCount = Constants.Unknown;
         var currentPage = Constants.FirstPage;
@@ -86,28 +61,26 @@ internal sealed class PureCloudUsersQueryHandlers : IUsersQueryHandlers
                 query.Paging.PageNumber = ++currentPage;
             }
 
-            return SystemResponse.SuccessResponse(analyticsUserDetailList);
+            return analyticsUserDetailList;
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<List<AnalyticsUserDetail>>(
-                exception,
-                query.JsonSerializeToString(query.GetType()));
+            ServiceResponse.ExceptionHandler.HandleException<List<AnalyticsUserDetail>>(exception, query.JsonSerializeToString(query.GetType()));
+            throw;
         }
     }
 
-    public ServiceResponse<List<UserAggregateDataContainer>> GetUsersStatusAggregates(UserAggregationQuery query)
+    public List<UserAggregateDataContainer> GetUsersStatusAggregates(UserAggregationQuery query)
     {
         try
         {
             var response = _usersApi.PostAnalyticsUsersAggregatesQuery(body: query);
-            return SystemResponse.SuccessResponse(response.Results ?? new List<UserAggregateDataContainer>());
+            return response.Results ?? new List<UserAggregateDataContainer>();
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<List<UserAggregateDataContainer>>(
-                exception,
-                query.JsonSerializeToString(query.GetType()));
+            ServiceResponse.ExceptionHandler.HandleException<List<UserAggregateDataContainer>>(exception, query.JsonSerializeToString(query.GetType()));
+            throw;
         }
     }
 }

@@ -12,6 +12,8 @@ var environment = builder.Environment;
 if (environment.IsDevelopment())
 {
     // fundamentals
+    builder.Services.AddTransient<IRoutingQueryHandlers, PureCloudRoutingQueryHandlers>();
+    builder.Services.AddTransient<IRoutingService, PureCloudRoutingService>();
     builder.Services.AddTransient<IQualityQueryHandlers, PureCloudQualityQueryHandlers>();
     builder.Services.AddTransient<IQualityService, PureCloudQualityService>();
     builder.Services.AddTransient<IAnalyticsQueryHandlers, PureCloudAnalyticsQueryHandlers>();
@@ -30,6 +32,8 @@ if (environment.IsDevelopment())
 else
 {
     // fundamentals
+    builder.Services.AddTransient<IRoutingQueryHandlers, PureCloudRoutingQueryHandlers>();
+    builder.Services.AddTransient<IRoutingService, PureCloudRoutingService>();
     builder.Services.AddTransient<IQualityQueryHandlers, PureCloudQualityQueryHandlers>();
     builder.Services.AddTransient<IQualityService, PureCloudQualityService>();
     builder.Services.AddTransient<IAnalyticsQueryHandlers, PureCloudAnalyticsQueryHandlers>();
@@ -64,6 +68,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 //app.UseHttpsRedirection();
 

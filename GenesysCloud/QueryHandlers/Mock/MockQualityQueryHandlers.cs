@@ -4,12 +4,12 @@ namespace GenesysCloud.QueryHandlers.Mock;
 
 public class MockQualityQueryHandlers : IQualityQueryHandlers
 {
-    public ServiceResponse<EvaluationResponse> ConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
+    public EvaluationResponse ConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
     {
         throw new NotImplementedException();
     }
 
-    public ServiceResponse<List<Survey>> ConversationSurveyDetail(string conversationId)
+    public List<Survey> ConversationSurveyDetail(string conversationId)
     {
         throw new NotImplementedException();
     }

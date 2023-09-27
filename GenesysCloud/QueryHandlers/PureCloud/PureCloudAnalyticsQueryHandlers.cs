@@ -15,20 +15,21 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
 {
     private readonly AnalyticsApi _analyticsApi = new();
 
-    public ServiceResponse<List<ConversationAggregateDataContainer>> GenesysConversationsAggregatesQuery(ConversationAggregationQuery query)
+    public List<ConversationAggregateDataContainer> GenesysConversationsAggregatesQuery(ConversationAggregationQuery query)
     {
         try
         {
             var response = _analyticsApi.PostAnalyticsConversationsAggregatesQuery(body: query);
-            return SystemResponse.SuccessResponse(response.Results ?? new List<ConversationAggregateDataContainer>());
+            return response.Results ?? new List<ConversationAggregateDataContainer>();
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<List<ConversationAggregateDataContainer>>(exception);
+            ServiceResponse.ExceptionHandler.HandleException<List<ConversationAggregateDataContainer>>(exception);
+            throw;
         }
     }
     
-    public ServiceResponse<List<AnalyticsConversationWithoutAttributes>> ConversationDetailQuery(ConversationQuery query)
+    public List<AnalyticsConversationWithoutAttributes> ConversationDetailQuery(ConversationQuery query)
     {
         var pageCount = Constants.Unknown;
         var currentPage = Constants.FirstPage;
@@ -39,9 +40,9 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
             while (pageCount >= currentPage || pageCount is Constants.Unknown)
             {
                 var response = _analyticsApi.PostAnalyticsConversationsDetailsQuery(body: query);
-                
+
                 if (response.TotalHits is 0)
-                    return SystemResponse.SuccessResponse(analyticsConversationWithoutAttributesList);
+                    return new List<AnalyticsConversationWithoutAttributes>();
                 
                 analyticsConversationWithoutAttributesList.AddRange(response.Conversations ?? Enumerable.Empty<AnalyticsConversationWithoutAttributes>());
                 
@@ -50,41 +51,41 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
                 
                 query.Paging.PageNumber = ++currentPage;
             }
-
-            return SystemResponse.SuccessResponse(analyticsConversationWithoutAttributesList);
+            
+            return analyticsConversationWithoutAttributesList;
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<List<AnalyticsConversationWithoutAttributes>>(exception,
-                query.JsonSerializeToString(query.GetType()));
+            ServiceResponse.ExceptionHandler.HandleException<List<AnalyticsConversationWithoutAttributes>>(exception, query.JsonSerializeToString(query.GetType()));
+            throw;
         }
     }
 
-    public ServiceResponse<List<SurveyAggregateDataContainer>> SurveyAggregatesQuery(SurveyAggregationQuery query)
+    public List<SurveyAggregateDataContainer> SurveyAggregatesQuery(SurveyAggregationQuery query)
     {
         try
         {
             var response = _analyticsApi.PostAnalyticsSurveysAggregatesQuery(body: query);
-            return SystemResponse.SuccessResponse(response.Results ?? new List<SurveyAggregateDataContainer>());
+            return response.Results ?? new List<SurveyAggregateDataContainer>();
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<List<SurveyAggregateDataContainer>>(exception,
-                query.JsonSerializeToString(query.GetType()));
+            ServiceResponse.ExceptionHandler.HandleException<List<SurveyAggregateDataContainer>>(exception, query.JsonSerializeToString(query.GetType()));
+            throw;
         }
     }
 
-    public ServiceResponse<List<EvaluationAggregateDataContainer>> EvaluationAggregationQuery(EvaluationAggregationQuery query)
+    public List<EvaluationAggregateDataContainer> EvaluationAggregationQuery(EvaluationAggregationQuery query)
     {
         try
         {
             var response = _analyticsApi.PostAnalyticsEvaluationsAggregatesQuery(body: query);
-            return SystemResponse.SuccessResponse(response.Results ?? new List<EvaluationAggregateDataContainer>());
+            return response.Results ?? new List<EvaluationAggregateDataContainer>();
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<List<EvaluationAggregateDataContainer>>(exception,
-                query.JsonSerializeToString(query.GetType()));
+            ServiceResponse.ExceptionHandler.HandleException<List<EvaluationAggregateDataContainer>>(exception, query.JsonSerializeToString(query.GetType()));
+            throw;
         }
     }
 }

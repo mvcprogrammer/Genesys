@@ -8,7 +8,21 @@ namespace GenesysCloud.Services.PureCloud.Static;
 /// </summary>
 internal static class AuthorizeService
 {
-    public static ServiceResponse<bool> Authorize(string clientId, string clientSecret, PureCloudRegionHosts cloudRegion)
+    private static bool _isAuthorized = false;
+
+    public static bool IsAuthorized()
+    {
+        if (_isAuthorized)
+            return true;
+        
+        var isAuthorized = Authorize(clientId: "6cad8911-28ca-40ee-97f5-01136dba9087",
+            clientSecret: "44hAG2qlkWCCfUVHU7xnZgL323OyaQ7KKIi297s25eY",
+            cloudRegion: PureCloudRegionHosts.eu_west_2);
+
+        _isAuthorized = isAuthorized;
+        return _isAuthorized;
+    }
+    public static bool Authorize(string clientId, string clientSecret, PureCloudRegionHosts cloudRegion)
     {
         Configuration.Default.ApiClient.setBasePath(cloudRegion);
 
@@ -16,11 +30,11 @@ internal static class AuthorizeService
         {
             Configuration.Default.ApiClient.PostToken(clientId, clientSecret);
         }
-        catch (Exception exception)
+        catch (ApiException exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<bool>(exception);
+            return ServiceResponse.LogFailure<bool>(exception.ErrorContent, exception.ErrorCode);
         }
 
-        return SystemResponse.SuccessResponse(true);
+        return ServiceResponse.LogAndReturnResponse(true);
     }
 }

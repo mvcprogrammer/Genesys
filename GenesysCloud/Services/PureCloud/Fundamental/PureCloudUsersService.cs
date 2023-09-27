@@ -2,7 +2,6 @@ using GenesysCloud.Queries.Users;
 using GenesysCloud.QueryHandlers.Contracts;
 using GenesysCloud.Services.Contracts.Fundamental;
 using GenesysCloud.Services.PureCloud.Static;
-using PureCloudPlatform.Client.V2.Client;
 using UserProfile = GenesysCloud.DTO.Response.Users.UserProfile;
 using UserStatusAggregateQuery = GenesysCloud.Queries.Users.UserStatusAggregateQuery;
 
@@ -18,12 +17,56 @@ namespace GenesysCloud.Services.PureCloud.Fundamental;
 internal sealed class PureCloudUsersService : IUsersService
 {
     private readonly IUsersQueryHandlers _usersQueryHandlers;
-    private const string NotAuthorized = "Not Authorized";
-    private bool _isAuthorized;
 
     public PureCloudUsersService(IUsersQueryHandlers usersQueryHandlers)
     {
         _usersQueryHandlers = usersQueryHandlers;
+    }
+    
+    /// <summary>
+    /// /// Used to get dictionary for getting profile information by Genesys GUID id.
+    /// </summary>
+    public Dictionary<string, UserProfile> GetAgentProfileLookup(IReadOnlyCollection<string> userIds)
+    {
+        return AuthorizedAction(() =>
+        {
+            var userList = _usersQueryHandlers.GetUsers(userIds);
+
+            var agentProfileLookup = userList 
+                .Select(x => new { x.Id, x.Name, x.Email, x.Title })
+                .ToDictionary(x => x.Id, x => new UserProfile { Email = x.Email, Name = x.Name, Title = x.Title });
+
+            return ServiceResponse.LogAndReturnResponse(agentProfileLookup);
+        });
+    }
+    
+    /// <summary>
+    /// Gets Aggregated user presence data.
+    /// This method is particularly useful for determining which users have presence data before requesting detail info. 
+    /// </summary>
+    public List<UserAggregateDataContainer> GetUserStatusAggregates(MetricsInterval interval, string[] userIds, string granularity)
+    {
+        return AuthorizedAction(() =>
+        {
+            var queryBuilder = new UserStatusAggregateQuery(interval, userIds, granularity);
+            var query = queryBuilder.Build();
+            var userStatusAggregates = _usersQueryHandlers.GetUsersStatusAggregates(query);
+            return ServiceResponse.LogAndReturnResponse(userStatusAggregates);
+        });
+    }
+
+    /// <summary>
+    /// /// Gets detailed user presence information
+    /// </summary>
+    public List<AnalyticsUserDetail> GetUsersStatusDetail(MetricsInterval interval, string[] userIds)
+    {
+        return AuthorizedAction(() =>
+        {
+            var queryBuilder = new UserStatusDetailsQuery(interval, userIds);
+            var query = queryBuilder.Build();
+            var userStatusDetail = _usersQueryHandlers.GetUsersStatusDetail(query);
+            return ServiceResponse.LogAndReturnResponse(userStatusDetail);
+        });
     }
     
     /// <summary>
@@ -32,111 +75,11 @@ internal sealed class PureCloudUsersService : IUsersService
     /// This delegate will invoke its action if authorized=true
     /// </param>
     /// </summary>
-    private ServiceResponse<T> AuthorizedAction<T>(Func<ServiceResponse<T>> action)
+    private static T AuthorizedAction<T>(Func<T> action)
     {
-        return Authorized()
-            ? action() 
-            : SystemResponse.FailureResponse<T>(NotAuthorized, (int)HttpStatusCode.Unauthorized);
-    }
-    
-    /// <summary>
-    /// Use this sparingly, it returns all users and can take awhile.
-    /// This might be a good place for breaking the users into a couple of groups and calling with an async span
-    /// </summary>
-    [Obsolete("Should use overloaded with userId's")]
-    public ServiceResponse<List<User>> GetUsers()
-    {
-        return AuthorizedAction(() =>
-        {
-            var userListResponse = _usersQueryHandlers.GetAllUsers();
-            return userListResponse;
-        });
-    }
-
-    /// <summary>
-    /// /// Used to get dictionary for getting profile information by Genesys GUID id.
-    /// Use a lot, response data should be cached when practical.
-    /// </summary>.
-    [Obsolete("Should use overloaded with userId's")]
-    public ServiceResponse<Dictionary<string, UserProfile>> GetAgentProfileLookup()
-    {
-        return AuthorizedAction(() =>
-        {
-            var userList = _usersQueryHandlers.GetAllUsers();
-
-            if (userList.Success is false || userList.Data is null)
-                return SystemResponse.FailureResponse<Dictionary<string, UserProfile>>(userList.ErrorMessage, userList.ErrorCode);
-
-            var agentProfileLookup = userList.Data
-                .Select(x => new { x.Id, x.Name, x.Email, x.Title })
-                .ToDictionary(x => x.Id, x => new UserProfile { Email = x.Email, Name = x.Name, Title = x.Title });
-
-            return SystemResponse.SuccessResponse(agentProfileLookup);
-        });
-    }
-    
-    /// <summary>
-    /// /// Used to get dictionary for getting profile information by Genesys GUID id.
-    /// </summary>
-    public ServiceResponse<Dictionary<string, UserProfile>> GetAgentProfileLookup(IReadOnlyCollection<string> userIds)
-    {
-        return AuthorizedAction(() =>
-        {
-            var userList = _usersQueryHandlers.GetUsers(userIds);
-
-            if (userList.Success is false || userList.Data is null)
-                return SystemResponse.FailureResponse<Dictionary<string, UserProfile>>(userList.ErrorMessage, userList.ErrorCode);
-
-            var agentProfileLookup = userList.Data
-                .Select(x => new { x.Id, x.Name, x.Email, x.Title })
-                .ToDictionary(x => x.Id, x => new UserProfile { Email = x.Email, Name = x.Name, Title = x.Title });
-
-            return SystemResponse.SuccessResponse(agentProfileLookup);
-        });
-    }
-    
-    /// <summary>
-    /// Gets Aggregated user presence data.
-    /// This method is particularly useful for determining which users have presence data before requesting detail info. 
-    /// </summary>
-    public ServiceResponse<List<UserAggregateDataContainer>> GetUserStatusAggregates(MetricsInterval interval, string[] userIds, string granularity)
-    {
-        return AuthorizedAction(() =>
-        {
-            var queryBuilder = new UserStatusAggregateQuery(interval, userIds, granularity);
-            var query = queryBuilder.Build();
-
-            return _usersQueryHandlers.GetUsersStatusAggregates(query);
-        });
-    }
-
-    /// <summary>
-    /// /// Gets detailed user presence information
-    /// </summary>
-    public ServiceResponse<List<AnalyticsUserDetail>> GetUsersStatusDetail(MetricsInterval interval, string[] userIds)
-    {
-        return AuthorizedAction(() =>
-        {
-            var queryBuilder = new UserStatusDetailsQuery(interval, userIds);
-            var query = queryBuilder.Build();
-
-            return _usersQueryHandlers.GetUsersStatusDetail(query);
-        });
-    }
-
-    /// <summary>
-    /// /// Gets an authorization token before making calls.
-    /// </summary>
-    private bool Authorized()
-    {
-        if (_isAuthorized) return true;
+        if (AuthorizeService.IsAuthorized())
+            return action();
         
-        var authorizeResponse = AuthorizeService.Authorize(
-            clientId: "6cad8911-28ca-40ee-97f5-01136dba9087",
-            clientSecret: "44hAG2qlkWCCfUVHU7xnZgL323OyaQ7KKIi297s25eY",
-            cloudRegion: PureCloudRegionHosts.eu_west_2);
-
-        _isAuthorized = authorizeResponse is { Success: true, Data: true };
-        return _isAuthorized;
+        throw new UnauthorizedAccessException(Constants.NotAuthorized);
     }
 }

@@ -2,8 +2,7 @@ namespace GenesysCloud.QueryHandlers.Contracts;
 
 public interface IUsersQueryHandlers
 {
-    public ServiceResponse<List<User>>GetAllUsers(int pageSize = 100, string state = "any");
-    public ServiceResponse<List<User>>GetUsers(IReadOnlyCollection<string>userIds);
-    public ServiceResponse<List<AnalyticsUserDetail>> GetUsersStatusDetail(UserDetailsQuery query);
-    public ServiceResponse<List<UserAggregateDataContainer>> GetUsersStatusAggregates(UserAggregationQuery query);
+    public IEnumerable<User> GetUsers(IReadOnlyCollection<string>userIds);
+    public List<AnalyticsUserDetail> GetUsersStatusDetail(UserDetailsQuery query);
+    public List<UserAggregateDataContainer> GetUsersStatusAggregates(UserAggregationQuery query);
 }

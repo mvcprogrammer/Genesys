@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using GenesysCloud.DTO.Response;
 using GenesysCloud.DTO.Response.Reports.Survey;
 using SurveyForm = GenesysCloud.DTO.Response.Reports.Survey.SurveyForm;
 using SurveyScoringSet = GenesysCloud.DTO.Response.Reports.Survey.SurveyScoringSet;
@@ -7,20 +9,56 @@ namespace GenesysCloud.Mappers.Reports.Surveys;
 
 public class MapperSurveyResponseToSurveyRecord
 {
-    private readonly List<Survey> _surveys;
-    private readonly UserProfile _agentProfile;
-    private readonly string _conversationId;
+    private readonly SurveyAggregateDataContainer _surveyAggregateDataContainer;
+    private readonly IReadOnlyList<Survey> _surveys;
+    private readonly IReadOnlyDictionary<string, UserProfile> _userProfiles;
+    private readonly IReadOnlyDictionary<string, QueueProfile> _queueProfiles;
+    private readonly IReadOnlyDictionary<string, AnalyticsConversationWithoutAttributes> _conversationDetails;
     
-
-    public MapperSurveyResponseToSurveyRecord(List<Survey> surveys, UserProfile agentProfile, string conversationId)
+    private const string UserIdKey = "userId";
+    private const string MediaTypeKey = "mediaType";
+    private const string QueueIdKey = "queueId";
+    private const string ConversationIdKey = "conversationId";
+    
+    public MapperSurveyResponseToSurveyRecord(
+        SurveyAggregateDataContainer surveyAggregateDataContainer, 
+        List<Survey> surveys, 
+        IReadOnlyDictionary<string, UserProfile> userProfiles, 
+        IReadOnlyDictionary<string, QueueProfile> queueProfiles,
+        IReadOnlyDictionary<string, AnalyticsConversationWithoutAttributes> conversationDetails)
     {
-        _surveys = surveys ?? throw new ArgumentException("Surveys are required. Array.Empty<string> is ok" );
-        _agentProfile = agentProfile ?? throw new ArgumentException("Agent Profile is required.");
-        _conversationId = conversationId ?? throw new ArgumentException("Conversation Id is required.");
+        _surveyAggregateDataContainer = surveyAggregateDataContainer ?? throw new ArgumentException("Survey Summary is required.");
+        _surveys = surveys ?? throw new ArgumentException("Surveys are required.");
+        _userProfiles = userProfiles ?? throw new ArgumentException("User Profiles are required.");
+        _queueProfiles = queueProfiles ?? throw new ArgumentException("Queue Profiles are required.");
+        _conversationDetails = conversationDetails ?? throw new ArgumentException("Conversation Details are required.");
     }
 
-    public ServiceResponse<List<SurveyRecord>> Map()
+    public List<SurveyRecord> Map()
     {
+        var surveyAggregateDataGroupDictionary = _surveyAggregateDataContainer.Group;
+        
+        if (surveyAggregateDataGroupDictionary.TryGetValue(ConversationIdKey, out var conversationId) is false)
+            throw new ValidationException("Failed to find interaction key.");
+        
+        if (surveyAggregateDataGroupDictionary.TryGetValue(UserIdKey, out var userId) is false) 
+            throw new ValidationException("Failed to find user key.");
+
+        if (_userProfiles.TryGetValue(userId, out var agentProfile) is false) 
+            throw new ValidationException("Failed to lookup user by key.");
+            
+        if(surveyAggregateDataGroupDictionary.TryGetValue(MediaTypeKey, out var mediaType) is false)
+            throw new ValidationException("Failed to get media type.");
+            
+        if(surveyAggregateDataGroupDictionary.TryGetValue(QueueIdKey, out var queueId) is false)
+            throw new ValidationException("Failed to get queue id.");
+            
+        if(_queueProfiles.TryGetValue(queueId, out var queueProfile) is false)
+            throw new ValidationException("Failed to get queue name.");
+
+        if (_conversationDetails.TryGetValue(conversationId, out var conversationDetail) is false)
+            throw new ValidationException($"Failed to get conversation detail: {conversationId}");
+        
         var surveyRecords = new List<SurveyRecord>();
         
         foreach (var survey in _surveys)
@@ -98,20 +136,25 @@ public class MapperSurveyResponseToSurveyRecord
                 Language = form.Language,
                 ModifiedDate = form.ModifiedDate?.ToString() ?? string.Empty,
                 Published = form.Published.GetValueOrDefault(false),
-                SurveyGroups = surveyGroups
+                SurveyGroups = surveyGroups,
+                TotalScore = ""
             };
             
             var surveyRecord = new SurveyRecord
             {
-                AgentProfile = _agentProfile,
+                AgentProfile = agentProfile,
+                MediaType = mediaType,
+                QueueName = queueProfile.QueueName,
                 Form = surveyForm,
-                InteractionLink = $"https://apps.euw2.pure.cloud/directory/#/engage/admin/interactions/{_conversationId}/qualitySummary",
-                CompletedDate = $"{survey.CompletedDate}"
+                InteractionLink = $"https://apps.euw2.pure.cloud/directory/#/engage/admin/interactions/{conversationId}/qualitySummary",
+                CompletedDate = $"{survey.CompletedDate}",
+                ExternalTag = conversationDetail.ExternalTag,
+                InteractionStartTime = $"{conversationDetail.ConversationStart.GetValueOrDefault().ToUniversalTime()}"
             };
             
             surveyRecords.Add(surveyRecord);
         }
         
-        return SystemResponse.SuccessResponse(surveyRecords);
+        return surveyRecords;
     }
 }

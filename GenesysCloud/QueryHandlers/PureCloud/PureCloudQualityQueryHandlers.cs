@@ -15,30 +15,31 @@ internal sealed class PureCloudQualityQueryHandlers : IQualityQueryHandlers
 {
     private readonly QualityApi _qualityApi = new();
     
-    public ServiceResponse<EvaluationResponse> ConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
+    public EvaluationResponse ConversationEvaluationDetail(string conversationId, string evaluationId, string expand)
     {
         try
         {
             var response = _qualityApi.GetQualityConversationEvaluation(conversationId: conversationId, evaluationId: evaluationId, expand: expand);
-            return SystemResponse.SuccessResponse(response ?? new EvaluationResponse());
+            return response ?? new EvaluationResponse();
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<EvaluationResponse>(exception, 
-                $"conversationId:{conversationId}, evaluationId:{evaluationId}, expand:{expand}");
+            ServiceResponse.ExceptionHandler.HandleException<EvaluationResponse>(exception, $"conversationId:{conversationId}, evaluationId:{evaluationId}, expand:{expand}");
+            throw;
         }
     }
     
-    public ServiceResponse<List<Survey>> ConversationSurveyDetail(string conversationId)
+    public List<Survey> ConversationSurveyDetail(string conversationId)
     {
         try
         {
             var response = _qualityApi.GetQualityConversationSurveys(conversationId);
-            return SystemResponse.SuccessResponse(response ?? new List<Survey>());
+            return response ?? new List<Survey>();
         }
         catch (Exception exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<List<Survey>>(exception, $"conversationId:{conversationId}");
+            ServiceResponse.ExceptionHandler.HandleException<List<Survey>>(exception, $"conversationId:{conversationId}");
+            throw;
         }
     }
 }

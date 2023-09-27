@@ -1,7 +1,6 @@
 using GenesysCloud.QueryHandlers.Contracts;
 using GenesysCloud.Services.Contracts.Fundamental;
 using GenesysCloud.Services.PureCloud.Static;
-using PureCloudPlatform.Client.V2.Client;
 using PresenceDefinition = GenesysCloud.DTO.Response.Presence.PresenceDefinition;
 
 namespace GenesysCloud.Services.PureCloud.Fundamental;
@@ -17,35 +16,16 @@ namespace GenesysCloud.Services.PureCloud.Fundamental;
 public class PureCloudPresenceService : IPresenceService
 {
     private readonly IPresenceQueryHandlers _presenceQueryHandlers;
-    private const string NotAuthorized = "Not Authorized";
     private const string LocalCode = "en_US";
-    private bool _isAuthorized;
     
     public PureCloudPresenceService(IPresenceQueryHandlers presenceQueryHandlers)
     {
         _presenceQueryHandlers = presenceQueryHandlers;
     }
-
-    /// <summary>
-    /// This method ensures all calls have authorization and handles not authorized responses.
-    /// <param name="action">
-    /// The delegate that will be invoked if authorized=true
-    /// </param>
-    /// </summary>
-    private ServiceResponse<T> AuthorizedAction<T>(Func<ServiceResponse<T>> action)
-    {
-        return Authorized()
-            ? action() 
-            : SystemResponse.FailureResponse<T>(NotAuthorized, (int)HttpStatusCode.Unauthorized);
-    }
     
-    public ServiceResponse<List<OrganizationPresence>> GetPresenceDefinitions()
+    public List<OrganizationPresence> GetPresenceDefinitions()
     {
-        return AuthorizedAction(() =>
-        {
-            var response = _presenceQueryHandlers.GetPresenceDefinitions();
-            return response;
-        });
+        return AuthorizedAction(() => ServiceResponse.LogAndReturnResponse(_presenceQueryHandlers.GetPresenceDefinitions()));
     }
 
     /// <summary>
@@ -53,13 +33,11 @@ public class PureCloudPresenceService : IPresenceService
     /// </summary>
     
     // ToDo: this method has a DTO object and must be moved to a higher level.
-    public ServiceResponse<Dictionary<string, PresenceDefinition>> GetPresenceDefinitionsDictionary()
+    public Dictionary<string, PresenceDefinition> GetPresenceDefinitionsDictionary()
     {
-        var response = GetPresenceDefinitions();
-        if (response.Success is false || response.Data is null)
-            return SystemResponse.FailureResponse<Dictionary<string, PresenceDefinition>>(response.ErrorMessage, response.ErrorCode);
+        var presenceDefinitions = GetPresenceDefinitions();
         
-        var presenceDefinitions = response.Data
+        var presenceDefinitionsLookup = presenceDefinitions
             .ToDictionary(x => x.Id, x =>  new PresenceDefinition
             {
                 SystemPresence = x.SystemPresence,
@@ -68,22 +46,20 @@ public class PureCloudPresenceService : IPresenceService
                 Label = x.LanguageLabels[LocalCode]
             });
 
-        return SystemResponse.SuccessResponse(presenceDefinitions);
+        return ServiceResponse.LogAndReturnResponse(presenceDefinitionsLookup);
     }
     
     /// <summary>
-    /// Gets an authorization token before making calls, if not already authorized.
+    /// This method ensures all calls have authorization and handles not authorized responses.
+    /// <param name="action">
+    /// This delegate will invoke its action if authorized=true
+    /// </param>
     /// </summary>
-    private bool Authorized()
+    private static T AuthorizedAction<T>(Func<T> action)
     {
-        if (_isAuthorized) return true;
+        if (AuthorizeService.IsAuthorized())
+            return action();
         
-        var authorizeResponse = AuthorizeService.Authorize(
-            clientId: "6cad8911-28ca-40ee-97f5-01136dba9087",
-            clientSecret: "44hAG2qlkWCCfUVHU7xnZgL323OyaQ7KKIi297s25eY",
-            cloudRegion: PureCloudRegionHosts.eu_west_2);
-
-        _isAuthorized = authorizeResponse is { Success: true, Data: true };
-        return _isAuthorized;
+        throw new UnauthorizedAccessException(Constants.NotAuthorized);
     }
 }

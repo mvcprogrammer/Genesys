@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using GenesysCloud.Services.Contracts.Derived;
 
 namespace Genesphere.Controllers;
@@ -30,16 +29,7 @@ public sealed class EvaluationReportsController : ControllerBase
     [HttpPost("Evaluations")]
     public IActionResult GetEvaluationData([FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
     {
-        var response = _evaluationReportDataService.GetEvaluationRecords(startTime, endTime, _divisions, Array.Empty<string>());
-        return GenerateResponse(response);
-    }
-    
-    [Description("Generic method to handle ServiceReponse.Success")]
-    private IActionResult GenerateResponse<T>(ServiceResponse<T> response)
-    {
-        if(response.Success)
-            return Ok(response);
-
-        return BadRequest(new { error = $"Message:{response.ErrorMessage},Link:https://service.mvcprogrammer.com/new/{response.Id}"});
+        var evaluationRecords = _evaluationReportDataService.GetEvaluationRecords(startTime, endTime, _divisions, Array.Empty<string>());
+        return Ok(evaluationRecords.JsonSerializeToString(Response.GetType()));
     }
 }

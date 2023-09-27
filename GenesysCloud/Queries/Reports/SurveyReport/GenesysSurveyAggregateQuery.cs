@@ -1,6 +1,6 @@
 namespace GenesysCloud.Queries.Reports.SurveyReport;
 
-public class GenesysSurveyAggregateQueryByDivisionByQueue
+public class GenesysSurveyAggregateQuery
 {
     private readonly MetricsInterval _interval;
     private readonly IReadOnlyCollection<string> _queueIds;
@@ -11,7 +11,7 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
     /// For more details, refer to the official documentation: 
     /// <see href="https://developer.genesys.cloud/useragentman/quality/"/>
     /// </summary>
-    public GenesysSurveyAggregateQueryByDivisionByQueue(MetricsInterval interval, IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queueIds)
+    public GenesysSurveyAggregateQuery(MetricsInterval interval, IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queueIds)
     {
         _interval = interval ?? throw new ArgumentNullException(nameof(interval), "Interval cannot be null");
         _divisionIds = divisions ?? throw new ArgumentNullException(nameof(divisions), "Divisions cannot be null (use Array.Empty<string>())");
@@ -90,6 +90,7 @@ public class GenesysSurveyAggregateQueryByDivisionByQueue
         
         var groupBy = new List<SurveyAggregationQuery.GroupByEnum>
         {
+            SurveyAggregationQuery.GroupByEnum.Queueid,
             SurveyAggregationQuery.GroupByEnum.Conversationid,
             SurveyAggregationQuery.GroupByEnum.Userid
         };

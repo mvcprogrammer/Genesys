@@ -2,6 +2,7 @@ namespace GenesysCloud.Services.Contracts.Fundamental;
 
 public interface IAnalyticsService
 {
-    public ServiceResponse<List<EvaluationAggregateDataContainer>> GetEvaluationAggregateData(EvaluationAggregationQuery query);
-    public ServiceResponse<List<SurveyAggregateDataContainer>> GetSurveyAggregateData(SurveyAggregationQuery query);
+    public List<EvaluationAggregateDataContainer> GetEvaluationAggregateData(EvaluationAggregationQuery query);
+    public List<SurveyAggregateDataContainer> GetSurveyAggregateData(SurveyAggregationQuery query);
+    public List<AnalyticsConversationWithoutAttributes> GetConversationDetails(ConversationQuery query);
 }

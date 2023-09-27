@@ -1,6 +1,4 @@
-using GenesysCloud.DTO.Response.Reports;
 using GenesysCloud.DTO.Response.Reports.Evaluation;
-using GenesysCloud.Mappers;
 using GenesysCloud.Mappers.Reports.Evaluations;
 using GenesysCloud.Queries.Reports.EvaluationReport;
 using GenesysCloud.Services.Contracts.Derived;
@@ -42,20 +40,17 @@ public sealed class PureCloudEvaluationReportDataService : IEvaluationReportData
     /// <param name="queues">If queues are supplied, will filter on that queue. May be combined with divisions. No nulls, use empty array if not used</param>
     /// <returns>A list of evaluation records consumed by evaluation report with agent scores, comments, questions and answers.</returns>
     /// </summary>
-    public ServiceResponse<List<EvaluationRecord>> GetEvaluationRecords(DateTime startTime, DateTime endTime,
-        IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queues)
+    public List<EvaluationRecord> GetEvaluationRecords(DateTime startTime, DateTime endTime, IReadOnlyCollection<string> divisions, IReadOnlyCollection<string> queues)
     {
         var interval = new MetricsInterval(startTime, endTime);
         
         var queryBuilder = new GenesysEvaluationAggregateQuery(interval, queues, divisions);
         var query = queryBuilder.Build();
-        
-        var response = _analyticsService.GetEvaluationAggregateData(query);
-        var evaluationAggregateDataContainers = response.Data ?? new List<EvaluationAggregateDataContainer>();
+        var evaluationAggregateData = _analyticsService.GetEvaluationAggregateData(query);
         
         var evaluationRecords = new List<EvaluationRecord>();
 
-        foreach (var evaluationAggregateDataContainer in evaluationAggregateDataContainers)
+        foreach (var evaluationAggregateDataContainer in evaluationAggregateData)
         {
             var evaluationAggregateDataGroupDictionary = evaluationAggregateDataContainer.Group;
             var evaluationAggregateStatisticalResponses = evaluationAggregateDataContainer.Data ?? new List<StatisticalResponse>();
@@ -74,25 +69,18 @@ public sealed class PureCloudEvaluationReportDataService : IEvaluationReportData
 
                 if (evaluationAggregateDataGroupDictionary.TryGetValue(EvaluationIdKey, out var evaluationId) is false)
                     continue;
-
+                
                 var evaluationResponse = _qualityService.GetConversationEvaluationDetail(conversationId, evaluationId, expand: "agent,evaluator,evaluationForm");
-                if (evaluationResponse.Success is false || evaluationResponse.Data is null)
-                    return SystemResponse.FailureResponse<List<EvaluationRecord>>(response.ErrorMessage, response.ErrorCode);
                 
-                var speechTextAnalyticsResponse = _speechTextAnalyticsService.GetConversationAnalytics(conversationId);
-                if(speechTextAnalyticsResponse.Success is false)
-                    return SystemResponse.FailureResponse<List<EvaluationRecord>>(response.ErrorMessage, response.ErrorCode);
+                var speechTextAnalytics = _speechTextAnalyticsService.GetConversationAnalytics(conversationId);
                 
-                var mapper = new MapperEvaluationResponseToEvaluationRecords(interval, evaluationResponse.Data, speechTextAnalyticsResponse.Data ?? new ConversationMetrics());
-                var evaluationRecordResponse = mapper.Map();
+                var mapper = new MapperEvaluationResponseToEvaluationRecords(interval, evaluationResponse, speechTextAnalytics);
+                var evaluationRecord = mapper.Map();
                 
-                if (evaluationRecordResponse.Success is false || evaluationRecordResponse.Data is null)
-                    continue;
-
-                evaluationRecords.Add(evaluationRecordResponse.Data);
+                evaluationRecords.Add(evaluationRecord);
             }
         }
 
-        return SystemResponse.SuccessResponse(evaluationRecords);
+        return ServiceResponse.LogAndReturnResponse(evaluationRecords, stackTraceIndex: 3);
     }
 }

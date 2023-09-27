@@ -1,5 +1,6 @@
 using GenesysCloud.QueryHandlers.Contracts;
 using PureCloudPlatform.Client.V2.Api;
+using PureCloudPlatform.Client.V2.Client;
 
 namespace GenesysCloud.QueryHandlers.PureCloud;
 
@@ -15,16 +16,25 @@ public class PureCloudSpeechTextQueryHandlers : ISpeechTextQueryHandlers
 {
     private readonly SpeechTextAnalyticsApi _speechTextAnalyticsApi = new();
 
-    public ServiceResponse<ConversationMetrics> GetConversationAnalytics(string conversationId)
+    public ConversationMetrics GetConversationAnalytics(string conversationId)
     {
         try
         {
             var response = _speechTextAnalyticsApi.GetSpeechandtextanalyticsConversation(conversationId: conversationId);
-            return SystemResponse.SuccessResponse(response);
+            return response ?? new ConversationMetrics();
         }
-        catch (Exception exception)
+        catch (ApiException exception)
         {
-            return SystemResponse.ExceptionHandler.HandleException<ConversationMetrics>(exception);
+            ServiceResponse.ExceptionHandler.HandleException<ConversationMetrics>(exception);
+
+            // Conversation has been deleted
+            if (exception.ErrorCode is 404)
+            {
+                // so return empty, will be handled as N/A
+                return new ConversationMetrics();
+            }
+            
+            throw;
         }
     }
 }

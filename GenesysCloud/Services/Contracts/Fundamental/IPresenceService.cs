@@ -3,6 +3,6 @@ using PresenceDefinition = GenesysCloud.DTO.Response.Presence.PresenceDefinition
 
 public interface IPresenceService
 {
-    public ServiceResponse<List<OrganizationPresence>> GetPresenceDefinitions();
-    public ServiceResponse<Dictionary<string, PresenceDefinition>> GetPresenceDefinitionsDictionary();
+    public List<OrganizationPresence> GetPresenceDefinitions();
+    public Dictionary<string, PresenceDefinition> GetPresenceDefinitionsDictionary();
 }
