@@ -4,11 +4,13 @@ using GenesysCloud.QueryHandlers.PureCloud;
 using GenesysCloud.Services.PureCloud.Derived;
 using GenesysCloud.Services.PureCloud.Fundamental;
 
-var interval = new MetricsInterval
-{
-    StartTimeUtc = new DateTime(2023, 09, 26, 0, 0, 0).ToUniversalTime(),
-    EndTimeUtc = new DateTime(2023, 09, 27, 0, 0, 0).ToUniversalTime()
-};
+// outputPath is the where you want the JSON file to be deposited
+// command line: NespressoSurveys.exe c:\output\data\  <- after the space is the path
+// Visual Studio: right click solution explorer, choose properties, debug tab,
+// in the 'Application arguments' field, enter your command-line arguments separated by spaces.
+
+var outputPath = string.Empty;
+if (args.Length > 0) outputPath = args[0];
 
 #region FakeDI
 
@@ -21,11 +23,6 @@ var qualityService = new PureCloudQualityService(qualityQueryHandlers);
 var usersServiceHandlers = new PureCloudUsersQueryHandlers();
 var usersService = new PureCloudUsersService(usersServiceHandlers);
 
-var speechTextAnalyticsHandler = new PureCloudSpeechTextQueryHandlers();
-var speechTextAnalyticsService = new PureCloudSpeechTextAnalyticsService(speechTextAnalyticsHandler);
-
-var evaluationReportDataService = new PureCloudEvaluationReportDataService(analyticService, qualityService, speechTextAnalyticsService);
-
 var routingQueryHandlers = new PureCloudRoutingQueryHandlers();
 var routingService = new PureCloudRoutingService(routingQueryHandlers);
 
@@ -33,33 +30,20 @@ var divisions = new[] { "d176b581-76c3-4d66-9686-7e2233e8eeb5" };
 
 #endregion
 
-#region EvaluationReports
-/*
-var evaluationRecords = evaluationReportDataService.GetEvaluationRecords(interval.StartTimeUtc, interval.EndTimeUtc, divisions, Array.Empty<string>());
-
-var evalJsonData = evaluationRecords.JsonSerializeToString(evaluationRecords.GetType());
-try
-{
-    var fileInfo = new FileInfo("evaluationData.json");
-    using var streamWriter = fileInfo.CreateText();
-    streamWriter.Write(evalJsonData);
-    streamWriter.Close();
-}
-catch (Exception)
-{
-    Debug.Assert(false);
-    return;
-}
-*/
-#endregion
+// This is designed to be run automated with date range of day before
+// if you want to specify a date range, use Genesphere Swagger
+var now = DateTime.UtcNow;       // get the current date and time in UTC
+var startTimeUtc = now.Date.AddDays(-1); // get midnight (UTC) of the day before
+var endTimeUtc = now.Date;               // get midnight (UTC) of the day of
+var interval = new MetricsInterval { StartTimeUtc = startTimeUtc, EndTimeUtc = endTimeUtc };
 
 var surveyReportsDataService = new PureCloudSurveyReportDataService(analyticService, qualityService, usersService, routingService);
-var surveyRecords = surveyReportsDataService.GetSurveyData(interval.StartTimeUtc, interval.EndTimeUtc, divisions, Array.Empty<string>());
+var surveyRecords = surveyReportsDataService.GetSurveyData(startTimeUtc, endTimeUtc, divisions, Array.Empty<string>());
 var surveyJsonData = surveyRecords.JsonSerializeToString(surveyRecords.GetType());
 
 try
 {
-    var fileInfo = new FileInfo("surveyData.json");
+    var fileInfo = new FileInfo($"{outputPath}/surveys-{interval.ToReportExtensionUtc}.json");
     using var streamWriter = fileInfo.CreateText();
     streamWriter.Write(surveyJsonData);
     streamWriter.Close();
@@ -67,5 +51,4 @@ try
 catch (Exception)
 {
     Debug.Assert(false);
-    return;
 }

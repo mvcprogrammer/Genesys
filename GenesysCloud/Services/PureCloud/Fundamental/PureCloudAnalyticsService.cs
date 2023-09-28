@@ -23,17 +23,20 @@ public class PureCloudAnalyticsService : IAnalyticsService
 
     public List<EvaluationAggregateDataContainer> GetEvaluationAggregateData(EvaluationAggregationQuery query)
     {
-        return AuthorizedAction(() => ServiceResponse.LogAndReturnResponse(_analyticsQueryHandlers.EvaluationAggregationQuery(query)));
+        return AuthorizedAction(() => 
+            ServiceResponse.LogAndReturnResponse(_analyticsQueryHandlers.EvaluationAggregationQuery(query)));
     }
 
     public List<SurveyAggregateDataContainer> GetSurveyAggregateData(SurveyAggregationQuery query)
     {
-        return AuthorizedAction(() => ServiceResponse.LogAndReturnResponse(_analyticsQueryHandlers.SurveyAggregatesQuery(query)));
+        return AuthorizedAction(() => 
+            ServiceResponse.LogAndReturnResponse(_analyticsQueryHandlers.SurveyAggregatesQuery(query)));
     }
 
     public List<AnalyticsConversationWithoutAttributes> GetConversationDetails(ConversationQuery query)
     {
-        return AuthorizedAction(() => ServiceResponse.LogAndReturnResponse(_analyticsQueryHandlers.ConversationDetailQuery(query)));
+        return AuthorizedAction(() => 
+            ServiceResponse.LogAndReturnResponse(_analyticsQueryHandlers.ConversationDetailQuery(query)));
     }
     
     /// <summary>

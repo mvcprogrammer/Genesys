@@ -7,6 +7,8 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseKestrel(options => { options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(5); });
+
 builder.Services.AddControllers();
 var environment = builder.Environment;
 if (environment.IsDevelopment())

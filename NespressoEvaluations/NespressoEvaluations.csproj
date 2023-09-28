@@ -7,14 +7,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <NoWarn>1701;1702;IL2121;NU1701</NoWarn>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <NoWarn>1701;1702;IL2121;NU1701</NoWarn>
-    </PropertyGroup>
-
     <ItemGroup>
       <ProjectReference Include="..\GenesysCloud\GenesysCloud.csproj" />
     </ItemGroup>

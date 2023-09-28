@@ -22,7 +22,7 @@ public sealed class EvaluationReportsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves by date range evaluation report data completed by an supervisor for an agent
+    /// Retrieves evaluation data completed by an supervisor for an agent
     /// </summary>
     /// <param name="startTime">Date range min re: evaluation creation date. ex: 2023-09-05T00:00:00Z</param>
     /// <param name="endTime">Date range max re: evaluation creation date. ex: 2023-09-06T00:00:00Z</param>

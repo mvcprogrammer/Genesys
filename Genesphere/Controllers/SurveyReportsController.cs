@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using GenesysCloud.Services.Contracts.Derived;
 
 namespace Genesphere.Controllers;
@@ -23,10 +22,10 @@ public class SurveyReportsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves by date range survey report data completed by an supervisor for an agent
+    /// Retrieves report data for surveys completed by customer for an agent interaction.
     /// </summary>
-    /// <param name="startTime">Date range min re: survey completion date. ex: 2023-09-05T00:00:00Z</param>
-    /// <param name="endTime">Date range max re: survey completion date. ex: 2023-09-06T00:00:00Z</param>
+    /// <param name="startTime">Minimum interaction start date/time. ex: 2023-09-05T00:00:00Z</param>
+    /// <param name="endTime">Maximum interaction start date/time. ex: 2023-09-06T00:00:00Z</param>
     [HttpPost("Surveys")]
     public IActionResult GetSurveyData([FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
     {

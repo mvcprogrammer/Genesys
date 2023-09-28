@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using GenesysCloud.DTO.Response.Reports.Survey;
 using GenesysCloud.Mappers.Reports.Surveys;
 using GenesysCloud.Queries.Reports.SurveyReport;
@@ -41,8 +42,8 @@ public sealed class PureCloudSurveyReportDataService : ISurveyReportDataService
     /// The aggregate is used to fetch the user profiles so this can be joined in the mapping method.
     /// The mapper creates the DTO. Only genesys data goes in, only Arise data comes out.
     /// Responses are always a ServiceResponse to bubble up handled exception messages, errors and response ids.
-    /// <param name="startTime">Interval start time, usually beginning of previous day</param>
-    /// <param name="endTime">Interval end time, usually the beginning of the current day</param>
+    /// <param name="startTime">Minimum value for interaction start date/time</param>
+    /// <param name="endTime">Maximum value for interaction start date/time</param>
     /// <param name="divisions">Will filter to only users within a division, not required but must be empty collection if not used.</param>
     /// <param name="queues">Will filter to only users in listed queues, not required but mut be empty collection if not used.</param>
     /// </summary>
@@ -63,7 +64,7 @@ public sealed class PureCloudSurveyReportDataService : ISurveyReportDataService
             var surveyAggregateDataGroupDictionary = surveyAggregateDataContainer.Group;
 
             if (surveyAggregateDataGroupDictionary.TryGetValue(ConversationIdKey, out var conversationId) is false)
-                throw new Exception("Failed to find interaction key.");
+                throw new ValidationException("Failed to find interaction key.");
 
             var surveyDetail = _qualityService.GetConversationSurveyDetail(conversationId);
             
@@ -100,8 +101,8 @@ public sealed class PureCloudSurveyReportDataService : ISurveyReportDataService
         // con only take 200 conversation ids at a time
         const int take = 200;
         
-        //surveys don't always happen on day of conversation, so search back up to 10 days.
-        var tenDayInterval = new MetricsInterval { EndTimeUtc = interval.EndTimeUtc, StartTimeUtc = interval.StartTimeUtc - new TimeSpan(10, 0, 0, 0) };
+        //surveys don't always happen on day of conversation, so search back 30 days.
+        var thirtyDayInterval = new MetricsInterval { EndTimeUtc = interval.EndTimeUtc, StartTimeUtc = interval.StartTimeUtc - new TimeSpan(30, 0, 0, 0) };
         
         var conversationList = surveyAggregateData.SelectMany(dataContainers => 
                 dataContainers.Group.Where(group => group.Key.Equals("conversationId")))
@@ -114,7 +115,7 @@ public sealed class PureCloudSurveyReportDataService : ISurveyReportDataService
         for (var skip = 0; skip < conversationList.Length; skip += take)
         {
             var conversationIds = conversationList.Skip(skip).Take(take).ToArray();
-            var conversationQueryBuilder = new GenesysConversationDetailQuery(tenDayInterval, conversationIds);
+            var conversationQueryBuilder = new GenesysConversationDetailQuery(thirtyDayInterval, conversationIds);
             var conversationQuery = conversationQueryBuilder.Build();
             var conversationsDetail = _analyticsService.GetConversationDetails(conversationQuery);
             conversationDetails.AddRange(conversationsDetail);
