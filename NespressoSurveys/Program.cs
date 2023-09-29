@@ -7,7 +7,6 @@ using GenesysCloud.Services.PureCloud.Fundamental;
 
 var outputPath = ConfigurationManager.AppSettings["OutputPath"];
 
-
 #region FakeDI
 
 var analyticsQueryHandlers = new PureCloudAnalyticsQueryHandlers();
@@ -34,6 +33,8 @@ var endTimeUtc = now.Date;               // get midnight (UTC) of the day of
 var interval = new MetricsInterval { StartTimeUtc = startTimeUtc, EndTimeUtc = endTimeUtc };
 
 var surveyReportsDataService = new PureCloudSurveyReportDataService(analyticService, qualityService, usersService, routingService);
+
+// not filtering by queues right now, so using Array.Empty<string> because null is not allowed.
 var surveyRecords = surveyReportsDataService.GetSurveyData(startTimeUtc, endTimeUtc, divisions, Array.Empty<string>());
 var surveyJsonData = surveyRecords.JsonSerializeToString(surveyRecords.GetType());
 
