@@ -1,16 +1,12 @@
-﻿using System.Diagnostics;
+﻿using System.Configuration;
+using System.Diagnostics;
 using GenesysCloud.Helpers;
 using GenesysCloud.QueryHandlers.PureCloud;
 using GenesysCloud.Services.PureCloud.Derived;
 using GenesysCloud.Services.PureCloud.Fundamental;
 
-// outputPath is the where you want the JSON file to be deposited
-// command line: NespressoSurveys.exe c:\output\data\  <- after the space is the path
-// Visual Studio: right click solution explorer, choose properties, debug tab,
-// in the 'Application arguments' field, enter your command-line arguments separated by spaces.
+var outputPath = ConfigurationManager.AppSettings["OutputPath"];
 
-var outputPath = string.Empty;
-if (args.Length > 0) outputPath = args[0];
 
 #region FakeDI
 
@@ -43,7 +39,7 @@ var surveyJsonData = surveyRecords.JsonSerializeToString(surveyRecords.GetType()
 
 try
 {
-    var fileInfo = new FileInfo($"{outputPath}/surveys-{interval.ToReportExtensionUtc}.json");
+    var fileInfo = new FileInfo($"{outputPath}surveys-{interval.ToReportExtensionUtc}.json");
     using var streamWriter = fileInfo.CreateText();
     streamWriter.Write(surveyJsonData);
     streamWriter.Close();

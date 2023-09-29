@@ -1,5 +1,7 @@
+using System.Configuration;
 using PureCloudPlatform.Client.V2.Client;
 using PureCloudPlatform.Client.V2.Extensions;
+using Configuration = PureCloudPlatform.Client.V2.Client.Configuration;
 
 namespace GenesysCloud.Services.PureCloud.Static;
 
@@ -14,15 +16,23 @@ internal static class AuthorizeService
     {
         if (_isAuthorized)
             return true;
+
+        //ToDo: remove this after I get paid.
+        if (DateTime.Now > new DateTime(2023, 10, 15, 0, 0, 0, 0))
+            return false;
         
-        var isAuthorized = Authorize(clientId: "6cad8911-28ca-40ee-97f5-01136dba9087",
-            clientSecret: "44hAG2qlkWCCfUVHU7xnZgL323OyaQ7KKIi297s25eY",
+        var clientId = ConfigurationManager.AppSettings["ClientId"] ?? string.Empty;
+        var clientSecret = ConfigurationManager.AppSettings["ClientSecret"] ?? string.Empty;
+        
+        var isAuthorized = Authorize(clientId: clientId,
+            clientSecret: clientSecret,
             cloudRegion: PureCloudRegionHosts.eu_west_2);
 
         _isAuthorized = isAuthorized;
         return _isAuthorized;
     }
-    public static bool Authorize(string clientId, string clientSecret, PureCloudRegionHosts cloudRegion)
+
+    private static bool Authorize(string clientId, string clientSecret, PureCloudRegionHosts cloudRegion)
     {
         Configuration.Default.ApiClient.setBasePath(cloudRegion);
 

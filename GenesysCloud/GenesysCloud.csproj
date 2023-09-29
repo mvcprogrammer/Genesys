@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <PackageReference Include="PureCloudPlatform.Client.V2" Version="188.0.0" />
+      <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
