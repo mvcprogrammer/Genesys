@@ -9,7 +9,6 @@ namespace GenesysCloud.QueryHandlers.PureCloud;
 /// Handlers are not dependent on query filters; 1 handler, many queries.
 /// The query handler always returns Genesys a Client.V2.Model in the data field of a ServiceResponse.
 /// DTO must never be done at this level for dependency segmentation.
-/// Responses are always a ServiceResponse to bubble up handled exception messages and response ids.
 /// </summary>
 internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
 {
@@ -60,7 +59,7 @@ internal sealed class PureCloudAnalyticsQueryHandlers : IAnalyticsQueryHandlers
             throw;
         }
     }
-
+    
     public List<SurveyAggregateDataContainer> SurveyAggregatesQuery(SurveyAggregationQuery query)
     {
         try

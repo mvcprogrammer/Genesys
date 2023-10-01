@@ -18,4 +18,8 @@
       <ProjectReference Include="..\GenesysCloud\GenesysCloud.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="App.Config" />
+    </ItemGroup>
+
 </Project>

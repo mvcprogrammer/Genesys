@@ -16,10 +16,6 @@ internal static class AuthorizeService
     {
         if (_isAuthorized)
             return true;
-
-        //ToDo: remove this after I get paid.
-        if (DateTime.Now > new DateTime(2023, 10, 15, 0, 0, 0, 0))
-            return false;
         
         var clientId = ConfigurationManager.AppSettings["ClientId"] ?? string.Empty;
         var clientSecret = ConfigurationManager.AppSettings["ClientSecret"] ?? string.Empty;
