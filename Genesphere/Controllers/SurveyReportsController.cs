@@ -1,3 +1,4 @@
+using System.Xml.Serialization;
 using GenesysCloud.Services.Contracts.Derived;
 
 namespace Genesphere.Controllers;
@@ -27,9 +28,10 @@ public class SurveyReportsController : ControllerBase
     /// <param name="startTime">Minimum interaction start date/time. ex: 2023-09-05T00:00:00Z</param>
     /// <param name="endTime">Maximum interaction start date/time. ex: 2023-09-06T00:00:00Z</param>
     [HttpPost("Surveys")]
+    [Produces("application/json")]
     public IActionResult GetSurveyData([FromQuery] DateTime startTime, [FromQuery] DateTime endTime)
     {
-        var response = _surveyReportDataService.GetSurveyData(startTime, endTime, _divisions, Array.Empty<string>());
-        return Ok(response.JsonSerializeToString(response.GetType()));
+        var surveyRecords = _surveyReportDataService.GetSurveyData(startTime, endTime, _divisions, Array.Empty<string>());
+        return Ok(surveyRecords);
     }
 }

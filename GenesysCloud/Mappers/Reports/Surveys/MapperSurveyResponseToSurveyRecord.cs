@@ -49,12 +49,17 @@ public class MapperSurveyResponseToSurveyRecord
             
         if(surveyAggregateDataGroupDictionary.TryGetValue(MediaTypeKey, out var mediaType) is false)
             throw new ValidationException("Failed to get media type.");
-            
-        if(surveyAggregateDataGroupDictionary.TryGetValue(QueueIdKey, out var queueId) is false)
+
+        if (surveyAggregateDataGroupDictionary.TryGetValue(QueueIdKey, out var queueId) is false)
             throw new ValidationException("Failed to get queue id.");
             
         if(_queueProfiles.TryGetValue(queueId, out var queueProfile) is false)
-            throw new ValidationException("Failed to get queue name.");
+        {
+            queueProfile = new QueueProfile();
+            //throw new ValidationException("Failed to get queue name.");
+            //ToDo: make this work correctly
+        }
+            
 
         if (_conversationDetails.TryGetValue(conversationId, out var conversationDetail) is false)
             throw new ValidationException($"Failed to get conversation detail: {conversationId}");

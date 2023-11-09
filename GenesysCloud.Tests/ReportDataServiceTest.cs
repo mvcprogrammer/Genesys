@@ -16,7 +16,7 @@ namespace GenesysCloud.Tests
             _mockQualityService = new Mock<IQualityService>();
             _mockSpeechTextAnalyticsService = new Mock<ISpeechTextAnalyticsService>();
             
-            _service = new PureCloudEvaluationReportDataService(_mockAnalyticsService.Object, _mockQualityService.Object, _mockSpeechTextAnalyticsService.Object);
+            //_service = new PureCloudEvaluationReportDataService(_mockAnalyticsService.Object, _mockQualityService.Object, _mockSpeechTextAnalyticsService.Object);
         }
 
         [Fact]

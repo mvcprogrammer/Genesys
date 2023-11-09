@@ -18,6 +18,7 @@ public sealed class PureCloudEvaluationReportDataService : IEvaluationReportData
     private readonly IAnalyticsService _analyticsService;
     private readonly IQualityService _qualityService;
     private readonly ISpeechTextAnalyticsService _speechTextAnalyticsService;
+    private readonly IUsersService _usersService;
     
     private const string NEvaluationsKey = "nEvaluations";
     private const string ConversationIdKey = "conversationId";
@@ -26,11 +27,13 @@ public sealed class PureCloudEvaluationReportDataService : IEvaluationReportData
     public PureCloudEvaluationReportDataService(
         IAnalyticsService analyticsService, 
         IQualityService qualityService,
-        ISpeechTextAnalyticsService speechTextAnalyticsService)
+        ISpeechTextAnalyticsService speechTextAnalyticsService,
+        IUsersService usersService)
     {
         _analyticsService = analyticsService;
         _qualityService = qualityService;
         _speechTextAnalyticsService = speechTextAnalyticsService;
+        _usersService = usersService;
     }
 
     /// <summary>
@@ -48,12 +51,30 @@ public sealed class PureCloudEvaluationReportDataService : IEvaluationReportData
         var query = queryBuilder.Build();
         var evaluationAggregateData = _analyticsService.GetEvaluationAggregateData(query);
         
+        // get the user id of all agents with an evaluation(s)
+        var userIds = evaluationAggregateData
+            .Where(data => data.Group.ContainsKey("userId"))
+            .Select(data => data.Group["userId"])
+            .Distinct()
+            .ToArray();
+
+        // this lookup will only include users who are in the "divisions" collection from the parameter
+        var userLookup = _usersService.GetAgentProfileLookup(userIds)
+            .Where(x => divisions.Contains(x.Value.DivisionId))
+            .Select(x => x.Key)
+            .ToHashSet();
+        
         var evaluationRecords = new List<EvaluationRecord>();
 
         foreach (var evaluationAggregateDataContainer in evaluationAggregateData)
         {
             var evaluationAggregateDataGroupDictionary = evaluationAggregateDataContainer.Group;
             var evaluationAggregateStatisticalResponses = evaluationAggregateDataContainer.Data ?? new List<StatisticalResponse>();
+
+            var user = evaluationAggregateDataContainer.Group.SingleOrDefault(x => x.Key.Equals("userId")).Value ?? "";
+            
+            // don't process users not in the "divisions" parameter
+            if(userLookup.Contains(user) is false) continue;
 
             foreach (var metricDictionary in evaluationAggregateStatisticalResponses.Select(statisticalResponse => 
                          statisticalResponse.Metrics.ToDictionary(x => x.Metric, x => x.Stats)))

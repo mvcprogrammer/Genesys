@@ -25,15 +25,18 @@ public class PureCloudSpeechTextQueryHandlers : ISpeechTextQueryHandlers
         catch (ApiException exception)
         {
             ServiceResponse.ExceptionHandler.HandleException<ConversationMetrics>(exception);
-
-            // Conversation has been deleted
-            if (exception.ErrorCode is 404)
-            {
-                // so return empty, will be handled as N/A
-                return new ConversationMetrics();
-            }
             
-            throw;
+            switch (exception.ErrorCode)
+            {
+                case 403:
+                    // permission issue, return empty ConversationMetrics, will be handled as N/A
+                    return new ConversationMetrics();
+                case 404:
+                    // conversation was deleted, so return empty ConversationMetrics, will be handled as N/A
+                    return new ConversationMetrics();
+                default:
+                    throw;
+            }
         }
     }
 }

@@ -17,6 +17,9 @@ var qualityService = new PureCloudQualityService(qualityQueryHandlers);
 var speechTextAnalyticsHandler = new PureCloudSpeechTextQueryHandlers();
 var speechTextAnalyticsService = new PureCloudSpeechTextAnalyticsService(speechTextAnalyticsHandler);
 
+var usersHandler = new PureCloudUsersQueryHandlers();
+var usersService = new PureCloudUsersService(usersHandler);
+
 var divisions = new[] { "d176b581-76c3-4d66-9686-7e2233e8eeb5" };
 #endregion
 
@@ -27,7 +30,7 @@ var startTimeUtc = now.Date.AddDays(-1); // get midnight (UTC) of the day before
 var endTimeUtc = now.Date;               // get midnight (UTC) of the day of
 var interval = new MetricsInterval { StartTimeUtc = startTimeUtc, EndTimeUtc = endTimeUtc };
 
-var evaluationReportDataService = new PureCloudEvaluationReportDataService(analyticService, qualityService, speechTextAnalyticsService);
+var evaluationReportDataService = new PureCloudEvaluationReportDataService(analyticService, qualityService, speechTextAnalyticsService, usersService);
 
 // not filtering by queues right now, so using Array.Empty<string> because null is not allowed.
 var evaluationRecords = evaluationReportDataService.GetEvaluationRecords(startTimeUtc, endTimeUtc, divisions, Array.Empty<string>());

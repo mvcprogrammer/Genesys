@@ -10,22 +10,20 @@ namespace GenesysCloud.Services.PureCloud.Static;
 /// </summary>
 internal static class AuthorizeService
 {
-    private static bool _isAuthorized = false;
+    private static bool _isAuthorized;
 
     public static bool IsAuthorized()
     {
-        if (_isAuthorized)
-            return true;
+        //if (_isAuthorized)
+        //    return true;
         
         var clientId = ConfigurationManager.AppSettings["ClientId"] ?? string.Empty;
         var clientSecret = ConfigurationManager.AppSettings["ClientSecret"] ?? string.Empty;
         
-        var isAuthorized = Authorize(clientId: clientId,
-            clientSecret: clientSecret,
-            cloudRegion: PureCloudRegionHosts.eu_west_2);
+        var isAuthorized = Authorize(clientId: clientId, clientSecret: clientSecret, cloudRegion: PureCloudRegionHosts.eu_west_2);
 
         _isAuthorized = isAuthorized;
-        return _isAuthorized;
+        return isAuthorized;
     }
 
     private static bool Authorize(string clientId, string clientSecret, PureCloudRegionHosts cloudRegion)

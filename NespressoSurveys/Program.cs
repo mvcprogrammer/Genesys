@@ -45,7 +45,8 @@ try
     streamWriter.Write(surveyJsonData);
     streamWriter.Close();
 }
-catch (Exception)
+catch (Exception exception)
 {
+    var text = exception.Message;
     Debug.Assert(false);
 }

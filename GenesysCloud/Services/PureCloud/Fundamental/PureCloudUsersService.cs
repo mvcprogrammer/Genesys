@@ -33,8 +33,8 @@ internal sealed class PureCloudUsersService : IUsersService
             var userList = _usersQueryHandlers.GetUsers(userIds);
 
             var agentProfileLookup = userList 
-                .Select(x => new { x.Id, x.Name, x.Email, x.Title })
-                .ToDictionary(x => x.Id, x => new UserProfile { Email = x.Email, Name = x.Name, Title = x.Title });
+                .Select(x => new { x.Id,  x.Name, x.Email, x.Title, x.Division })
+                .ToDictionary(x => x.Id, x => new UserProfile { Email = x.Email, Name = x.Name, Title = x.Title, DivisionId = x.Division.Id, DivisionName = x.Division.Name});
 
             return ServiceResponse.LogAndReturnResponse(agentProfileLookup);
         });
